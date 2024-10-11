@@ -79,27 +79,27 @@ export default function ProjectDetails() {
                             </Badge>
                         </div>
 
-                        <Card>
-                            <CardHeader>
+                        <Card className="border-none shadow-md">
+                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                 <CardTitle>Detalii Proiect</CardTitle>
-                                <CardDescription>Informații generale despre proiect</CardDescription>
+                                <CardDescription className="text-gray-300">Informații generale despre proiect</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
+                            <CardContent className="space-y-6 p-6">
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div className="flex items-center space-x-2">
-                                        <Calendar className="h-5 w-5 text-[#0A2747]" />
+                                        <Calendar className="h-5 w-5 text-[#FAA502]" />
                                         <span>Data început: {projectData.startDate}</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Calendar className="h-5 w-5 text-[#0A2747]" />
+                                        <Calendar className="h-5 w-5 text-[#FAA502]" />
                                         <span>Data finalizare: {projectData.endDate}</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <MapPin className="h-5 w-5 text-[#0A2747]" />
+                                        <MapPin className="h-5 w-5 text-[#FAA502]" />
                                         <span>Locație: {projectData.location}</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Building className="h-5 w-5 text-[#0A2747]" />
+                                        <Building className="h-5 w-5 text-[#FAA502]" />
                                         <span>Tip: Renovare</span>
                                     </div>
                                 </div>
@@ -112,18 +112,18 @@ export default function ProjectDetails() {
                         </Card>
 
                         <Tabs defaultValue="tasks">
-                            <TabsList>
-                                <TabsTrigger value="tasks">Sarcini</TabsTrigger>
-                                <TabsTrigger value="contacts">Contacte Client</TabsTrigger>
-                                <TabsTrigger value="materials">Materiale și Unelte</TabsTrigger>
+                            <TabsList className="bg-[#0A2747] text-white">
+                                <TabsTrigger value="tasks" className="data-[state=active]:bg-[#FAA502]">Sarcini</TabsTrigger>
+                                <TabsTrigger value="contacts" className="data-[state=active]:bg-[#FAA502]">Contacte Client</TabsTrigger>
+                                <TabsTrigger value="materials" className="data-[state=active]:bg-[#FAA502]">Materiale și Unelte</TabsTrigger>
                             </TabsList>
                             <TabsContent value="tasks">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Sarcini Proiect</CardTitle>
-                                        <CardDescription>Lista sarcinilor și statusul lor</CardDescription>
+                                        <CardDescription className="text-gray-300">Lista sarcinilor și statusul lor</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6">
                                         <ScrollArea className="h-[300px]">
                                             {projectData.tasks.map((task) => (
                                                 <div key={task.id} className="mb-4 flex items-center justify-between">
@@ -138,26 +138,26 @@ export default function ProjectDetails() {
                                 </Card>
                             </TabsContent>
                             <TabsContent value="contacts">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Contacte Client</CardTitle>
-                                        <CardDescription>Persoane de contact pentru acest proiect</CardDescription>
+                                        <CardDescription className="text-gray-300">Persoane de contact pentru acest proiect</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6">
                                         {projectData.clientContacts.map((contact, index) => (
                                             <div key={index} className="mb-4 space-y-2">
                                                 <div className="flex items-center space-x-2">
-                                                    <User className="h-5 w-5 text-[#0A2747]" />
+                                                    <User className="h-5 w-5 text-[#FAA502]" />
                                                     <span className="font-semibold">{contact.name}</span>
                                                 </div>
                                                 <div className="ml-7 space-y-1">
                                                     <p>{contact.role}</p>
                                                     <div className="flex items-center space-x-2">
-                                                        <Phone className="h-4 w-4 text-[#0A2747]" />
+                                                        <Phone className="h-4 w-4 text-[#FAA502]" />
                                                         <span>{contact.phone}</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">
-                                                        <Mail className="h-4 w-4 text-[#0A2747]" />
+                                                        <Mail className="h-4 w-4 text-[#FAA502]" />
                                                         <span>{contact.email}</span>
                                                     </div>
                                                 </div>
@@ -167,13 +167,13 @@ export default function ProjectDetails() {
                                 </Card>
                             </TabsContent>
                             <TabsContent value="materials">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Materiale și Unelte</CardTitle>
-                                        <CardDescription>Necesarul de materiale și unelte pentru proiect</CardDescription>
+                                        <CardDescription className="text-gray-300">Necesarul de materiale și unelte pentru proiect</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-4">
+                                    <CardContent className="p-6">
+                                        <div className="space-y-6">
                                             <div>
                                                 <h3 className="mb-2 font-semibold">Materiale:</h3>
                                                 <ul className="list-inside list-disc space-y-1">
@@ -197,19 +197,20 @@ export default function ProjectDetails() {
                             </TabsContent>
                         </Tabs>
 
-                        <Card>
-                            <CardHeader>
+                        <Card className="border-none shadow-md">
+                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                 <CardTitle>Propune Modificări</CardTitle>
-                                <CardDescription>Trimite o propunere de modificare către manager</CardDescription>
+                                <CardDescription className="text-gray-300">Trimite o propunere de modificare către manager</CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="p-6">
                                 <Textarea
                                     placeholder="Descrieți modificarea propusă..."
                                     value={changeProposal}
                                     onChange={(e) => setChangeProposal(e.target.value)}
+                                    className="min-h-[100px]"
                                 />
                             </CardContent>
-                            <CardFooter>
+                            <CardFooter className="bg-gray-50 rounded-b-lg">
                                 <Button onClick={handleProposeChange} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
                                     Trimite Propunerea
                                 </Button>

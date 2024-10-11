@@ -1,7 +1,7 @@
-'use client';
+"use client"
 
 import React, { useState } from 'react'
-import { Bell, Plus, BarChart2, Users, Clock, DollarSign, Search, X, Home, Settings } from 'lucide-react'
+import { Bell, Plus, BarChart2, Users, Clock, DollarSign, Search, X, Home, Settings, Calendar, FileText } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -10,21 +10,22 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { DashboardLayout } from '@/components/layout';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { DashboardLayout } from '@/components/layout'
+import { toast } from "@/hooks/use-toast"
 
 export const managerLinks = [
-  { href: "/manager-dashboard", label: "Dashboard", icon: <Home /> },
+  { href: "/manager-dashboard", label: "Dashboard", icon: <Home className="h-4 w-4" /> },
   { href: "/manager-dashboard/clients", label: "Clienți", icon: <Users className="h-4 w-4" /> },
-  { href: "/manager-dashboard/create-project", label: "Creare Proiect", icon: <BarChart2 className="h-4 w-4" /> },
-  { href: "/manager-dashboard/program", label: "Calendar", icon: <Settings className="h-4 w-4" /> },
-  { href: "/manager-dashboard/active-projects", label: "Proiecte Active", icon: <Settings className="h-4 w-4" /> },
-  { href: "/manager-dashboard/employees", label: "Gestionare Angajati", icon: <Settings className="h-4 w-4" /> },
-  { href: "/manager-dashboard/reports", label: "Rapoarte si Statistici", icon: <Settings className="h-4 w-4" /> },
-  { href: "/manager-dashboard/settings", label: "Setari", icon: <Settings className="h-4 w-4" /> },
+  { href: "/manager-dashboard/create-project", label: "Creare Proiect", icon: <Plus className="h-4 w-4" /> },
+  { href: "/manager-dashboard/program", label: "Calendar", icon: <Calendar className="h-4 w-4" /> },
+  { href: "/manager-dashboard/active-projects", label: "Proiecte Active", icon: <BarChart2 className="h-4 w-4" /> },
+  { href: "/manager-dashboard/employees", label: "Gestionare Angajați", icon: <Users className="h-4 w-4" /> },
+  { href: "/manager-dashboard/reports", label: "Rapoarte și Statistici", icon: <FileText className="h-4 w-4" /> },
+  { href: "/manager-dashboard/settings", label: "Setări", icon: <Settings className="h-4 w-4" /> },
 ]
 
-export default function Dashboard() {
+export default function ManagerDashboard() {
   const [jobFilter, setJobFilter] = useState('')
   const [teamFilter, setTeamFilter] = useState('')
   const [employeeFilter, setEmployeeFilter] = useState('')
@@ -54,8 +55,6 @@ export default function Dashboard() {
     { name: "Ion Ionescu", role: "Tehnician", projects: 6, hoursWorked: 140, performance: "Bună" },
   ]
 
-
-
   const filteredJobs = jobs.filter(job => job.name.toLowerCase().includes(jobFilter.toLowerCase()))
   const filteredTeams = teams.filter(team => team.name.toLowerCase().includes(teamFilter.toLowerCase()))
   const filteredEmployees = employees.filter(employee => employee.name.toLowerCase().includes(employeeFilter.toLowerCase()))
@@ -67,6 +66,14 @@ export default function Dashboard() {
 
   const handleNewProjectSubmit = (e) => {
     e.preventDefault()
+    if (!newProject.name || !newProject.client || !newProject.startDate || !newProject.endDate || !newProject.assignedTeam) {
+      toast({
+        title: "Eroare",
+        description: "Vă rugăm să completați toate câmpurile obligatorii.",
+        variant: "destructive",
+      })
+      return
+    }
     console.log('New Project Submitted:', newProject)
     // Here you would typically send this data to your backend
     setIsNewProjectModalOpen(false)
@@ -78,61 +85,67 @@ export default function Dashboard() {
       endDate: '',
       assignedTeam: '',
     })
+    toast({
+      title: "Proiect creat",
+      description: "Noul proiect a fost adăugat cu succes.",
+    })
   }
 
   return (
     <DashboardLayout links={managerLinks}>
-      <div className="min-h-screen bg-[#f4f7fa]">
+      <div className="min-h-screen bg-[#F4F7FA]">
         <main className="container mx-auto p-4 space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-[#0A2647]">Bun venit, Manager!</h2>
+            <h2 className="text-2xl font-semibold text-[#0A2747]">Bun venit, Manager!</h2>
             <Dialog open={isNewProjectModalOpen} onOpenChange={setIsNewProjectModalOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-[#FFA500] hover:bg-[#FF8C00] text-white">
+                <Button className="bg-[#FAA502] hover:bg-[#E69500] text-white">
                   <Plus className="mr-2 h-4 w-4" /> Proiect Nou
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="bg-white">
                 <DialogHeader>
-                  <DialogTitle>Adaugă Proiect Nou</DialogTitle>
-                  <DialogDescription>
+                  <DialogTitle className="text-[#0A2747]">Adaugă Proiect Nou</DialogTitle>
+                  <DialogDescription className="text-gray-500">
                     Completează detaliile pentru noul proiect de curățenie.
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleNewProjectSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nume Proiect</Label>
+                    <Label htmlFor="name" className="text-[#0A2747]">Nume Proiect</Label>
                     <Input
                       id="name"
                       name="name"
                       value={newProject.name}
                       onChange={handleNewProjectChange}
                       required
+                      className="border-[#0A2747]"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="description">Descriere</Label>
+                    <Label htmlFor="description" className="text-[#0A2747]">Descriere</Label>
                     <Textarea
                       id="description"
                       name="description"
                       value={newProject.description}
                       onChange={handleNewProjectChange}
-                      required
+                      className="border-[#0A2747]"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="client">Client</Label>
+                    <Label htmlFor="client" className="text-[#0A2747]">Client</Label>
                     <Input
                       id="client"
                       name="client"
                       value={newProject.client}
                       onChange={handleNewProjectChange}
                       required
+                      className="border-[#0A2747]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="startDate">Data Început</Label>
+                      <Label htmlFor="startDate" className="text-[#0A2747]">Data Început</Label>
                       <Input
                         id="startDate"
                         name="startDate"
@@ -140,10 +153,11 @@ export default function Dashboard() {
                         value={newProject.startDate}
                         onChange={handleNewProjectChange}
                         required
+                        className="border-[#0A2747]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="endDate">Data Sfârșit</Label>
+                      <Label htmlFor="endDate" className="text-[#0A2747]">Data Sfârșit</Label>
                       <Input
                         id="endDate"
                         name="endDate"
@@ -151,17 +165,18 @@ export default function Dashboard() {
                         value={newProject.endDate}
                         onChange={handleNewProjectChange}
                         required
+                        className="border-[#0A2747]"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="assignedTeam">Echipă Asignată</Label>
+                    <Label htmlFor="assignedTeam" className="text-[#0A2747]">Echipă Asignată</Label>
                     <Select
                       name="assignedTeam"
                       value={newProject.assignedTeam}
                       onValueChange={(value) => handleNewProjectChange({ target: { name: 'assignedTeam', value } })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="border-[#0A2747]">
                         <SelectValue placeholder="Selectează o echipă" />
                       </SelectTrigger>
                       <SelectContent>
@@ -173,66 +188,66 @@ export default function Dashboard() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setIsNewProjectModalOpen(false)}>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsNewProjectModalOpen(false)} className="border-[#0A2747] text-[#0A2747]">
                       Anulează
                     </Button>
-                    <Button type="submit" className="bg-[#FFA500] hover:bg-[#FF8C00] text-white">
+                    <Button type="submit" className="bg-[#FAA502] hover:bg-[#E69500] text-white">
                       Adaugă Proiect
                     </Button>
-                  </div>
+                  </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
+            <Card className="bg-white shadow-md border-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Proiecte Active</CardTitle>
-                <BarChart2 className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-[#0A2747]">Proiecte Active</CardTitle>
+                <BarChart2 className="h-4 w-4 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12</div>
-                <p className="text-xs text-muted-foreground">+2 față de luna trecută</p>
+                <div className="text-2xl font-bold text-[#0A2747]">12</div>
+                <p className="text-xs text-[#0A2747] opacity-70">+2 față de luna trecută</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-white shadow-md border-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Echipe Active</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-[#0A2747]">Echipe Active</CardTitle>
+                <Users className="h-4 w-4 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">8</div>
-                <p className="text-xs text-muted-foreground">+1 față de luna trecută</p>
+                <div className="text-2xl font-bold text-[#0A2747]">8</div>
+                <p className="text-xs text-[#0A2747] opacity-70">+1 față de luna trecută</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-white shadow-md border-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Ore Lucrate</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-[#0A2747]">Ore Lucrate</CardTitle>
+                <Clock className="h-4 w-4 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1,234</div>
-                <p className="text-xs text-muted-foreground">+10% față de luna trecută</p>
+                <div className="text-2xl font-bold text-[#0A2747]">1,234</div>
+                <p className="text-xs text-[#0A2747] opacity-70">+10% față de luna trecută</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-white shadow-md border-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Venit Total</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-[#0A2747]">Venit Total</CardTitle>
+                <DollarSign className="h-4 w-4 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
-                <p className="text-xs text-muted-foreground">+20.1% față de luna trecută</p>
+                <div className="text-2xl font-bold text-[#0A2747]">$45,231.89</div>
+                <p className="text-xs text-[#0A2747] opacity-70">+20.1% față de luna trecută</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
+            <Card className="bg-white shadow-md border-none">
               <CardHeader>
-                <CardTitle>Proiecte în Desfășurare</CardTitle>
+                <CardTitle className="text-[#0A2747]">Proiecte în Desfășurare</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[200px] bg-[#0A2647] rounded-md flex items-center justify-center text-white">
@@ -240,9 +255,9 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-white shadow-md border-none">
               <CardHeader>
-                <CardTitle>Proiecte Viitoare</CardTitle>
+                <CardTitle className="text-[#0A2747]">Proiecte Viitoare</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[200px] bg-[#0A2647] rounded-md flex items-center justify-center text-white">
@@ -253,22 +268,23 @@ export default function Dashboard() {
           </div>
 
           <Tabs defaultValue="jobs" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="jobs">Lucrări</TabsTrigger>
-              <TabsTrigger value="teams">Echipe</TabsTrigger>
-              <TabsTrigger value="employees">Angajați</TabsTrigger>
+            <TabsList className="bg-[#0A2747] text-white">
+              <TabsTrigger value="jobs" className="data-[state=active]:bg-[#FAA502]">Lucrări</TabsTrigger>
+              <TabsTrigger value="teams" className="data-[state=active]:bg-[#FAA502]">Echipe</TabsTrigger>
+              <TabsTrigger value="employees" className="data-[state=active]:bg-[#FAA502]">Angajați</TabsTrigger>
+            
             </TabsList>
             <TabsContent value="jobs">
-              <Card>
+              <Card className="bg-white shadow-md border-none">
                 <CardHeader>
-                  <CardTitle>Statistici per Lucrare</CardTitle>
+                  <CardTitle className="text-[#0A2747]">Statistici per Lucrare</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Search className="w-4 h-4 text-muted-foreground" />
+                    <Search className="w-4 h-4 text-[#0A2747]" />
                     <Input
                       placeholder="Caută lucrări..."
                       value={jobFilter}
                       onChange={(e) => setJobFilter(e.target.value)}
-                      className="max-w-sm"
+                      className="max-w-sm border-[#0A2747]"
                     />
                   </div>
                 </CardHeader>
@@ -277,11 +293,11 @@ export default function Dashboard() {
                     {filteredJobs.map((job, index) => (
                       <div key={index}>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium">{job.name}</h4>
-                          <span className="text-sm text-muted-foreground">{job.progress}%</span>
+                          <h4 className="text-sm font-medium text-[#0A2747]">{job.name}</h4>
+                          <span className="text-sm text-[#0A2747] opacity-70">{job.progress}%</span>
                         </div>
                         <Progress value={job.progress} className="h-2" />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <div className="flex justify-between text-xs text-[#0A2747] opacity-70 mt-1">
                           <span>Timp lucrat: {job.time} ore</span>
                           <span>Cost: ${job.cost}</span>
                           <span className={job.profit >= 0 ? "text-green-500" : "text-red-500"}>
@@ -295,16 +311,16 @@ export default function Dashboard() {
               </Card>
             </TabsContent>
             <TabsContent value="teams">
-              <Card>
+              <Card className="bg-white shadow-md border-none">
                 <CardHeader>
-                  <CardTitle>Statistici per Echipă</CardTitle>
+                  <CardTitle className="text-[#0A2747]">Statistici per Echipă</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Search className="w-4 h-4 text-muted-foreground" />
+                    <Search className="w-4 h-4 text-[#0A2747]" />
                     <Input
                       placeholder="Caută echipe..."
                       value={teamFilter}
                       onChange={(e) => setTeamFilter(e.target.value)}
-                      className="max-w-sm"
+                      className="max-w-sm border-[#0A2747]"
                     />
                   </div>
                 </CardHeader>
@@ -313,18 +329,17 @@ export default function Dashboard() {
                     {filteredTeams.map((team, index) => (
                       <div key={index}>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium">{team.name}</h4>
-                          <span className="text-sm text-muted-foreground">{team.members} membri</span>
+                          <h4 className="text-sm font-medium text-[#0A2747]">{team.name}</h4>
+                          <span className="text-sm text-[#0A2747] opacity-70">{team.members} membri</span>
                         </div>
                         <Progress value={team.efficiency} className="h-2" />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <div className="flex justify-between text-xs text-[#0A2747] opacity-70 mt-1">
                           <span>Proiecte finalizate: {team.completedProjects}</span>
                           <span>Timp total: {team.totalTime} ore</span>
                           <span className={team.efficiency >= 90 ? "text-green-500" : "text-yellow-500"}>
                             Eficiență: {team.efficiency}%
                           </span>
                         </div>
-
                       </div>
                     ))}
                   </div>
@@ -332,16 +347,16 @@ export default function Dashboard() {
               </Card>
             </TabsContent>
             <TabsContent value="employees">
-              <Card>
+              <Card className="bg-white shadow-md border-none">
                 <CardHeader>
-                  <CardTitle>Statistici per Angajat</CardTitle>
+                  <CardTitle className="text-[#0A2747]">Statistici per Angajat</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Search className="w-4 h-4 text-muted-foreground" />
+                    <Search className="w-4 h-4 text-[#0A2747]" />
                     <Input
                       placeholder="Caută angajați..."
                       value={employeeFilter}
                       onChange={(e) => setEmployeeFilter(e.target.value)}
-                      className="max-w-sm"
+                      className="max-w-sm border-[#0A2747]"
                     />
                   </div>
                 </CardHeader>
@@ -350,11 +365,11 @@ export default function Dashboard() {
                     {filteredEmployees.map((employee, index) => (
                       <div key={index}>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium">{employee.name}</h4>
-                          <span className="text-sm text-muted-foreground">{employee.role}</span>
+                          <h4 className="text-sm font-medium text-[#0A2747]">{employee.name}</h4>
+                          <span className="text-sm text-[#0A2747] opacity-70">{employee.role}</span>
                         </div>
                         <Progress value={(employee.projects / 10) * 100} className="h-2" />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <div className="flex justify-between text-xs text-[#0A2747] opacity-70 mt-1">
                           <span>Proiecte: {employee.projects}</span>
                           <span>Ore lucrate: {employee.hoursWorked}</span>
                           <span className={employee.performance === "Excelentă" ? "text-green-500" : "text-yellow-500"}>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, ChevronDown, ChevronUp, Mail, Phone, Search, User } from "lucide-react"
+import { ArrowLeft, ChevronDown, ChevronUp, Mail, Phone, Search, User, Calendar, ClipboardList, Star } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,11 +16,11 @@ import { DashboardLayout } from "@/components/layout"
 import { managerLinks } from "../page"
 
 const initialEmployees = [
-    { id: 1, name: "Ana Popescu", role: "Developer", team: "Frontend", skills: ["React", "TypeScript"], availability: "Disponibil", phone: "0722123456", email: "ana.popescu@example.com", projects: ["Proiect Alpha", "Proiect Beta"], hoursWorked: 160, performance: 95 },
-    { id: 2, name: "Mihai Ionescu", role: "Designer", team: "UX/UI", skills: ["Figma", "Adobe XD"], availability: "În proiect", phone: "0733234567", email: "mihai.ionescu@example.com", projects: ["Proiect Gamma"], hoursWorked: 152, performance: 88 },
-    { id: 3, name: "Elena Dumitrescu", role: "Manager", team: "Project Management", skills: ["Agile", "Scrum"], availability: "Disponibil", phone: "0744345678", email: "elena.dumitrescu@example.com", projects: ["Proiect Delta", "Proiect Epsilon"], hoursWorked: 175, performance: 92 },
-    { id: 4, name: "Alexandru Popa", role: "Developer", team: "Backend", skills: ["Node.js", "Python"], availability: "În concediu", phone: "0755456789", email: "alexandru.popa@example.com", projects: ["Proiect Beta"], hoursWorked: 120, performance: 85 },
-    { id: 5, name: "Maria Stancu", role: "Tester", team: "QA", skills: ["Selenium", "Jest"], availability: "Disponibil", phone: "0766567890", email: "maria.stancu@example.com", projects: ["Proiect Alpha", "Proiect Gamma"], hoursWorked: 168, performance: 90 },
+    { id: 1, name: "Ana Popescu", role: "Cleaning Specialist", team: "Residential", skills: ["Deep Cleaning", "Carpet Cleaning"], availability: "Disponibil", phone: "0722123456", email: "ana.popescu@cleanpro.com", projects: ["Vila Evergreen", "Apartamente Sunrise"], hoursWorked: 160, performance: 95 },
+    { id: 2, name: "Mihai Ionescu", role: "Window Cleaner", team: "Commercial", skills: ["High-rise Window Cleaning", "Pressure Washing"], availability: "În proiect", phone: "0733234567", email: "mihai.ionescu@cleanpro.com", projects: ["Turnul de Birouri Skyline"], hoursWorked: 152, performance: 88 },
+    { id: 3, name: "Elena Dumitrescu", role: "Team Lead", team: "Industrial", skills: ["Industrial Equipment Cleaning", "OSHA Safety Standards"], availability: "Disponibil", phone: "0744345678", email: "elena.dumitrescu@cleanpro.com", projects: ["Fabrica AutoTech", "Depozit LogiPro"], hoursWorked: 175, performance: 92 },
+    { id: 4, name: "Alexandru Popa", role: "Sanitation Specialist", team: "Healthcare", skills: ["Hospital-grade Disinfection", "Biohazard Cleaning"], availability: "În concediu", phone: "0755456789", email: "alexandru.popa@cleanpro.com", projects: ["Spitalul Central"], hoursWorked: 120, performance: 85 },
+    { id: 5, name: "Maria Stancu", role: "Green Cleaning Expert", team: "Eco-Friendly", skills: ["Eco-friendly Products", "LEED Certification"], availability: "Disponibil", phone: "0766567890", email: "maria.stancu@cleanpro.com", projects: ["Centrul de Afaceri GreenTech", "Hotelul Natura"], hoursWorked: 168, performance: 90 },
 ]
 
 export default function EmployeeManagement() {
@@ -62,30 +62,33 @@ export default function EmployeeManagement() {
     })
 
     const EmployeeList = () => (
-        <Card>
-            <CardHeader>
+        <Card className="border-none shadow-md">
+            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                 <CardTitle>Lista Angajaților</CardTitle>
-                <CardDescription>Gestionează și vizualizează detaliile angajaților</CardDescription>
+                <CardDescription className="text-gray-300">Gestionează și vizualizează detaliile angajaților</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="mb-4 flex items-center space-x-2">
-                    <Input
-                        placeholder="Caută angajați..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="max-w-sm"
-                    />
+            <CardContent className="p-6">
+                <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <div className="relative flex-1 min-w-[200px]">
+                        <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
+                        <Input
+                            placeholder="Caută angajați..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
                     <Select value={filterTeam} onValueChange={setFilterTeam}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Filtrează după echipă" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">Toate echipele</SelectItem>
-                            <SelectItem value="Frontend">Frontend</SelectItem>
-                            <SelectItem value="Backend">Backend</SelectItem>
-                            <SelectItem value="UX/UI">UX/UI</SelectItem>
-                            <SelectItem value="Project Management">Project Management</SelectItem>
-                            <SelectItem value="QA">QA</SelectItem>
+                            <SelectItem value="Residential">Rezidențial</SelectItem>
+                            <SelectItem value="Commercial">Comercial</SelectItem>
+                            <SelectItem value="Industrial">Industrial</SelectItem>
+                            <SelectItem value="Healthcare">Sănătate</SelectItem>
+                            <SelectItem value="Eco-Friendly">Eco-Friendly</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select value={filterAvailability} onValueChange={setFilterAvailability}>
@@ -121,12 +124,12 @@ export default function EmployeeManagement() {
                         <TableBody>
                             {filteredEmployees.map((employee) => (
                                 <TableRow key={employee.id}>
-                                    <TableCell>{employee.name}</TableCell>
+                                    <TableCell className="font-medium">{employee.name}</TableCell>
                                     <TableCell>{employee.role}</TableCell>
                                     <TableCell>{employee.team}</TableCell>
                                     <TableCell>
                                         {employee.skills.map((skill) => (
-                                            <Badge key={skill} variant="secondary" className="mr-1">
+                                            <Badge key={skill} variant="secondary" className="mr-1 mb-1">
                                                 {skill}
                                             </Badge>
                                         ))}
@@ -155,20 +158,20 @@ export default function EmployeeManagement() {
     )
 
     const EmployeeDetails = ({ employee, onBack }) => (
-        <Card>
-            <CardHeader>
+        <Card className="border-none shadow-md">
+            <CardHeader className="bg-[#0A2747] text-white">
                 <div className="flex items-center justify-between">
-                    <Button variant="ghost" onClick={onBack}>
+                    <Button variant="ghost" onClick={onBack} className="text-white hover:text-gray-200">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Înapoi
                     </Button>
                     <CardTitle>{employee.name}</CardTitle>
                 </div>
-                <CardDescription>Detalii despre angajat</CardDescription>
+                <CardDescription className="text-gray-300">Detalii despre angajat</CardDescription>
             </CardHeader>
-            <CardContent>
-                <Tabs defaultValue="personal">
-                    <TabsList>
+            <CardContent className="p-6">
+                <Tabs defaultValue="personal" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="personal">Date Personale</TabsTrigger>
                         <TabsTrigger value="work">Istoric Lucrări</TabsTrigger>
                         <TabsTrigger value="performance">Performanță</TabsTrigger>
@@ -188,8 +191,8 @@ export default function EmployeeManagement() {
                                 <span>Telefon: {employee.phone}</span>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-[#0A2747]">Competențe:</h3>
-                                <div className="flex flex-wrap gap-2 mt-2">
+                                <h3 className="font-semibold text-[#0A2747] mb-2">Competențe:</h3>
+                                <div className="flex flex-wrap gap-2">
                                     {employee.skills.map((skill) => (
                                         <Badge key={skill} variant="secondary">
                                             {skill}
@@ -201,23 +204,23 @@ export default function EmployeeManagement() {
                     </TabsContent>
                     <TabsContent value="work">
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-[#0A2747]">Proiecte Asignate:</h3>
-                            <ul className="list-disc list-inside">
+                            <h3 className="font-semibold text-[#0A2747] mb-2">Proiecte Asignate:</h3>
+                            <ul className="list-disc list-inside space-y-2">
                                 {employee.projects.map((project) => (
-                                    <li key={project}>{project}</li>
+                                    <li key={project} className="text-gray-700">{project}</li>
                                 ))}
                             </ul>
                         </div>
                     </TabsContent>
                     <TabsContent value="performance">
                         <div className="space-y-4">
-                            <div>
-                                <h3 className="font-semibold text-[#0A2747]">Ore Lucrate:</h3>
-                                <p>{employee.hoursWorked} ore în ultima lună</p>
+                            <div className="flex items-center space-x-2">
+                                <Calendar className="h-5 w-5 text-[#0A2747]" />
+                                <span>Ore Lucrate: {employee.hoursWorked} ore în ultima lună</span>
                             </div>
-                            <div>
-                                <h3 className="font-semibold text-[#0A2747]">Scor de Performanță:</h3>
-                                <p>{employee.performance}/100</p>
+                            <div className="flex items-center space-x-2">
+                                <Star className="h-5 w-5 text-[#0A2747]" />
+                                <span>Scor de Performanță: {employee.performance}/100</span>
                             </div>
                         </div>
                     </TabsContent>

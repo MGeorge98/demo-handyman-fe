@@ -57,7 +57,6 @@ export default function SettingsAndProfile() {
     }
 
     const handleSavePersonalInfo = () => {
-        // În practică, aici ar fi un apel API pentru a salva informațiile
         toast({
             title: "Informații personale actualizate",
             description: "Modificările au fost salvate cu succes.",
@@ -65,7 +64,6 @@ export default function SettingsAndProfile() {
     }
 
     const handleChangePassword = () => {
-        // În practică, aici ar fi un apel API pentru a schimba parola
         if (password.new !== password.confirm) {
             toast({
                 title: "Eroare",
@@ -84,55 +82,55 @@ export default function SettingsAndProfile() {
     return (
         <DashboardLayout links={managerLinks}>
             <div className="flex min-h-screen w-full flex-col bg-[#F4F7FA]">
-                <main className="flex-1 p-6">
+                <main className="flex-1 p-6 md:p-8">
                     <div className="mx-auto max-w-4xl space-y-8">
                         <h1 className="text-3xl font-bold text-[#0A2747]">Setări și Profil</h1>
 
-                        <Tabs defaultValue="personal-info">
-                            <TabsList className="mb-4">
-                                <TabsTrigger value="personal-info">
+                        <Tabs defaultValue="personal-info" className="space-y-6">
+                            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 rounded-lg bg-muted p-1">
+                                <TabsTrigger value="personal-info" className="rounded-md">
                                     <User className="mr-2 h-4 w-4" />
                                     Informații Personale
                                 </TabsTrigger>
-                                <TabsTrigger value="security">
+                                <TabsTrigger value="security" className="rounded-md">
                                     <Lock className="mr-2 h-4 w-4" />
                                     Securitate
                                 </TabsTrigger>
-                                <TabsTrigger value="notifications">
+                                <TabsTrigger value="notifications" className="rounded-md">
                                     <Bell className="mr-2 h-4 w-4" />
                                     Notificări
                                 </TabsTrigger>
-                                <TabsTrigger value="preferences">
+                                <TabsTrigger value="preferences" className="rounded-md">
                                     <Globe className="mr-2 h-4 w-4" />
                                     Preferințe
                                 </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="personal-info">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md rounded-xl">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-xl">
                                         <CardTitle>Informații Personale</CardTitle>
-                                        <CardDescription>Actualizați-vă datele personale și de contact</CardDescription>
+                                        <CardDescription className="text-gray-300">Actualizați-vă datele personale și de contact</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6 space-y-6">
                                         <form className="space-y-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="name">Nume Complet</Label>
-                                                <Input id="name" name="name" value={personalInfo.name} onChange={handlePersonalInfoChange} />
+                                                <Input id="name" name="name" value={personalInfo.name} onChange={handlePersonalInfoChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="email">Email</Label>
-                                                <Input id="email" name="email" type="email" value={personalInfo.email} onChange={handlePersonalInfoChange} />
+                                                <Input id="email" name="email" type="email" value={personalInfo.email} onChange={handlePersonalInfoChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="phone">Telefon</Label>
-                                                <Input id="phone" name="phone" type="tel" value={personalInfo.phone} onChange={handlePersonalInfoChange} />
+                                                <Input id="phone" name="phone" type="tel" value={personalInfo.phone} onChange={handlePersonalInfoChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="bio">Biografie</Label>
-                                                <Textarea id="bio" name="bio" value={personalInfo.bio} onChange={handlePersonalInfoChange} />
+                                                <Textarea id="bio" name="bio" value={personalInfo.bio} onChange={handlePersonalInfoChange} className="rounded-md" />
                                             </div>
-                                            <Button onClick={handleSavePersonalInfo} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                            <Button onClick={handleSavePersonalInfo} className="w-full bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                                 Salvează Modificările
                                             </Button>
                                         </form>
@@ -141,26 +139,26 @@ export default function SettingsAndProfile() {
                             </TabsContent>
 
                             <TabsContent value="security">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md rounded-xl">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-xl">
                                         <CardTitle>Securitate</CardTitle>
-                                        <CardDescription>Gestionați-vă parola și setările de securitate</CardDescription>
+                                        <CardDescription className="text-gray-300">Gestionați-vă parola și setările de securitate</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6 space-y-6">
                                         <form className="space-y-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="current-password">Parola Curentă</Label>
-                                                <Input id="current-password" name="current" type="password" value={password.current} onChange={handlePasswordChange} />
+                                                <Input id="current-password" name="current" type="password" value={password.current} onChange={handlePasswordChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="new-password">Parola Nouă</Label>
-                                                <Input id="new-password" name="new" type="password" value={password.new} onChange={handlePasswordChange} />
+                                                <Input id="new-password" name="new" type="password" value={password.new} onChange={handlePasswordChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="confirm-password">Confirmă Parola Nouă</Label>
-                                                <Input id="confirm-password" name="confirm" type="password" value={password.confirm} onChange={handlePasswordChange} />
+                                                <Input id="confirm-password" name="confirm" type="password" value={password.confirm} onChange={handlePasswordChange} className="rounded-md" />
                                             </div>
-                                            <Button onClick={handleChangePassword} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                            <Button onClick={handleChangePassword} className="w-full bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                                 Schimbă Parola
                                             </Button>
                                         </form>
@@ -169,12 +167,12 @@ export default function SettingsAndProfile() {
                             </TabsContent>
 
                             <TabsContent value="notifications">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md rounded-xl">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-xl">
                                         <CardTitle>Setări Notificări</CardTitle>
-                                        <CardDescription>Gestionați preferințele de notificare</CardDescription>
+                                        <CardDescription className="text-gray-300">Gestionați preferințele de notificare</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6 space-y-6">
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="space-y-0.5">
@@ -205,17 +203,17 @@ export default function SettingsAndProfile() {
                             </TabsContent>
 
                             <TabsContent value="preferences">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md rounded-xl">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-xl">
                                         <CardTitle>Preferințe</CardTitle>
-                                        <CardDescription>Personalizați experiența dvs. în aplicație</CardDescription>
+                                        <CardDescription className="text-gray-300">Personalizați experiența dvs. în aplicație</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6 space-y-6">
                                         <div className="space-y-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="language">Limbă</Label>
                                                 <Select value={preferences.language} onValueChange={(value) => handlePreferenceChange('language', value)}>
-                                                    <SelectTrigger id="language">
+                                                    <SelectTrigger id="language" className="rounded-md">
                                                         <SelectValue placeholder="Selectați limba" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -228,7 +226,7 @@ export default function SettingsAndProfile() {
                                             <div className="space-y-2">
                                                 <Label htmlFor="theme">Temă</Label>
                                                 <Select value={preferences.theme} onValueChange={(value) => handlePreferenceChange('theme', value)}>
-                                                    <SelectTrigger id="theme">
+                                                    <SelectTrigger id="theme" className="rounded-md">
                                                         <SelectValue placeholder="Selectați tema" />
                                                     </SelectTrigger>
                                                     <SelectContent>

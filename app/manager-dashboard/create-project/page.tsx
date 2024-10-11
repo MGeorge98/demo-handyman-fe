@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Upload } from "lucide-react"
+import { CalendarIcon, Upload, Trash2, Plus, X } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -23,6 +23,7 @@ type Contact = {
 type Team = {
     id: string;
     name: string;
+    skills: string[];
 }
 
 type Project = {
@@ -32,7 +33,7 @@ type Project = {
     contacts: Contact[];
     materials: string;
     people: string;
-    tools: string;
+    equipment: string;
     price: string;
     date: Date | undefined;
     teams: string[];
@@ -40,9 +41,9 @@ type Project = {
 }
 
 const teams: Team[] = [
-    { id: '1', name: 'Echipa Alpha' },
-    { id: '2', name: 'Echipa Beta' },
-    { id: '3', name: 'Echipa Gamma' },
+    { id: '1', name: 'Echipa Rezidențială', skills: ['Curățenie generală', 'Curățare covoare'] },
+    { id: '2', name: 'Echipa Comercială', skills: ['Curățenie birouri', 'Curățare geamuri'] },
+    { id: '3', name: 'Echipa Industrială', skills: ['Curățenie fabrici', 'Decontaminare'] },
 ]
 
 export default function ProjectCreation() {
@@ -53,7 +54,7 @@ export default function ProjectCreation() {
         contacts: [{ name: '', phone: '' }],
         materials: '',
         people: '',
-        tools: '',
+        equipment: '',
         price: '',
         date: undefined,
         teams: [],
@@ -74,14 +75,31 @@ export default function ProjectCreation() {
         setProject({ ...project, contacts: [...project.contacts, { name: '', phone: '' }] })
     }
 
+    const removeContact = (index: number) => {
+        const newContacts = project.contacts.filter((_, i) => i !== index)
+        setProject({ ...project, contacts: newContacts })
+    }
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setProject({ ...project, files: [...project.files, ...Array.from(e.target.files)] })
         }
     }
 
+    const removeFile = (index: number) => {
+        const newFiles = project.files.filter((_, i) => i !== index)
+        setProject({ ...project, files: newFiles })
+    }
+
     const handleTeamChange = (value: string) => {
-        setProject({ ...project, teams: [...project.teams, value] })
+        if (!project.teams.includes(value)) {
+            setProject({ ...project, teams: [...project.teams, value] })
+        }
+    }
+
+    const removeTeam = (teamId: string) => {
+        const newTeams = project.teams.filter(id => id !== teamId)
+        setProject({ ...project, teams: newTeams })
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -94,88 +112,95 @@ export default function ProjectCreation() {
     return (
         <DashboardLayout links={managerLinks}>
             <div className="min-h-screen bg-[#F4F7FA] p-4 sm:p-6 md:p-8">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Creare Proiect Nou</h1>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Detalii Proiect</CardTitle>
+                <h1 className="text-3xl font-bold mb-8 text-[#0A2747]">Creare Proiect Nou</h1>
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    <Card className="border-none shadow-md rounded-xl overflow-hidden">
+                        <CardHeader className="bg-[#0A2747] text-white p-6">
+                            <CardTitle className="text-xl">Detalii Proiect</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label htmlFor="name">Nume Proiect</Label>
-                                <Input id="name" name="name" value={project.name} onChange={handleInputChange} required />
+                        <CardContent className="space-y-6 p-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="name" className="text-sm font-medium text-gray-700">Nume Proiect</Label>
+                                <Input id="name" name="name" value={project.name} onChange={handleInputChange} required className="rounded-md" />
                             </div>
-                            <div>
-                                <Label htmlFor="description">Descriere Detaliată</Label>
-                                <Textarea id="description" name="description" value={project.description} onChange={handleInputChange} required />
+                            <div className="space-y-2">
+                                <Label htmlFor="description" className="text-sm font-medium text-gray-700">Descriere Detaliată</Label>
+                                <Textarea id="description" name="description" value={project.description} onChange={handleInputChange} required className="rounded-md" rows={4} />
                             </div>
-                            <div>
-                                <Label htmlFor="location">Locație</Label>
-                                <Input id="location" name="location" value={project.location} onChange={handleInputChange} required />
+                            <div className="space-y-2">
+                                <Label htmlFor="location" className="text-sm font-medium text-gray-700">Locație</Label>
+                                <Input id="location" name="location" value={project.location} onChange={handleInputChange} required className="rounded-md" />
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Persoane de Contact</CardTitle>
+                    <Card className="border-none shadow-md rounded-xl overflow-hidden">
+                        <CardHeader className="bg-[#0A2747] text-white p-6">
+                            <CardTitle className="text-xl">Persoane de Contact</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 p-6">
                             {project.contacts.map((contact, index) => (
-                                <div key={index} className="flex space-x-2">
+                                <div key={index} className="flex items-center space-x-2">
                                     <Input
                                         placeholder="Nume"
                                         value={contact.name}
                                         onChange={(e) => handleContactChange(index, 'name', e.target.value)}
+                                        className="rounded-md flex-grow"
                                     />
                                     <Input
                                         placeholder="Telefon"
                                         value={contact.phone}
                                         onChange={(e) => handleContactChange(index, 'phone', e.target.value)}
+                                        className="rounded-md flex-grow"
                                     />
+                                    <Button type="button" onClick={() => removeContact(index)} variant="ghost" size="icon" className="rounded-full">
+                                        <X className="h-4 w-4" />
+                                    </Button>
                                 </div>
                             ))}
-                            <Button type="button" onClick={addContact} variant="outline">Adaugă Contact</Button>
+                            <Button type="button" onClick={addContact} variant="outline" className="mt-2 rounded-md">
+                                <Plus className="mr-2 h-4 w-4" /> Adaugă Contact
+                            </Button>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Resurse Necesare</CardTitle>
+                    <Card className="border-none shadow-md rounded-xl overflow-hidden">
+                        <CardHeader className="bg-[#0A2747] text-white p-6">
+                            <CardTitle className="text-xl">Resurse Necesare</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label htmlFor="materials">Materiale</Label>
-                                <Textarea id="materials" name="materials" value={project.materials} onChange={handleInputChange} />
+                        <CardContent className="space-y-6 p-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="materials" className="text-sm font-medium text-gray-700">Materiale de Curățenie</Label>
+                                <Textarea id="materials" name="materials" value={project.materials} onChange={handleInputChange} placeholder="Ex: Detergenți, mopuri, lavete" className="rounded-md" rows={3} />
                             </div>
-                            <div>
-                                <Label htmlFor="people">Oameni</Label>
-                                <Textarea id="people" name="people" value={project.people} onChange={handleInputChange} />
+                            <div className="space-y-2">
+                                <Label htmlFor="people" className="text-sm font-medium text-gray-700">Personal Necesar</Label>
+                                <Textarea id="people" name="people" value={project.people} onChange={handleInputChange} placeholder="Ex: 3 curățători, 1 supervizor" className="rounded-md" rows={3} />
                             </div>
-                            <div>
-                                <Label htmlFor="tools">Unelte</Label>
-                                <Textarea id="tools" name="tools" value={project.tools} onChange={handleInputChange} />
+                            <div className="space-y-2">
+                                <Label htmlFor="equipment" className="text-sm font-medium text-gray-700">Echipamente</Label>
+                                <Textarea id="equipment" name="equipment" value={project.equipment} onChange={handleInputChange} placeholder="Ex: Aspiratoare industriale, mașini de spălat pardoseli" className="rounded-md" rows={3} />
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Detalii Financiare și Planificare</CardTitle>
+                    <Card className="border-none shadow-md rounded-xl overflow-hidden">
+                        <CardHeader className="bg-[#0A2747] text-white p-6">
+                            <CardTitle className="text-xl">Detalii Financiare și Planificare</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label htmlFor="price">Preț Lucrare (vizibil doar pentru manager)</Label>
-                                <Input id="price" name="price" type="number" value={project.price} onChange={handleInputChange} />
+                        <CardContent className="space-y-6 p-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="price" className="text-sm font-medium text-gray-700">Preț Lucrare (vizibil doar pentru manager)</Label>
+                                <Input id="price" name="price" type="number" value={project.price} onChange={handleInputChange} className="rounded-md" />
                             </div>
-                            <div>
-                                <Label>Data și Ora Începerii</Label>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-700">Data și Ora Începerii</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant={"outline"}
                                             className={cn(
-                                                "w-full justify-start text-left font-normal",
+                                                "w-full justify-start text-left font-normal rounded-md",
                                                 !project.date && "text-muted-foreground"
                                             )}
                                         >
@@ -196,13 +221,13 @@ export default function ProjectCreation() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Asignare Echipe</CardTitle>
+                    <Card className="border-none shadow-md rounded-xl overflow-hidden">
+                        <CardHeader className="bg-[#0A2747] text-white p-6">
+                            <CardTitle className="text-xl">Asignare Echipe</CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-6">
                             <Select onValueChange={handleTeamChange}>
-                                <SelectTrigger>
+                                <SelectTrigger className="rounded-md">
                                     <SelectValue placeholder="Selectează echipa" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -211,25 +236,51 @@ export default function ProjectCreation() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <div className="mt-2">
-                                Echipe selectate: {project.teams.map((teamId) => teams.find(t => t.id === teamId)?.name).join(', ')}
+                            <div className="mt-4 space-y-2">
+                                {project.teams.map((teamId) => {
+                                    const team = teams.find(t => t.id === teamId)
+                                    return team ? (
+                                        <div key={team.id} className="flex items-center justify-between bg-gray-100 p-2 rounded-md">
+                                            <span>{team.name}</span>
+                                            <Button onClick={() => removeTeam(team.id)} variant="ghost" size="sm" className="rounded-full">
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ) : null
+                                })}
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Încărcare Documente</CardTitle>
+                    <Card className="border-none shadow-md rounded-xl overflow-hidden">
+                        <CardHeader className="bg-[#0A2747] text-white p-6">
+                            <CardTitle className="text-xl">Încărcare Documente</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <Input id="file" type="file" multiple onChange={handleFileChange} />
-                            <div className="mt-2">
-                                Fișiere încărcate: {project.files.map(file => file.name).join(', ')}
+                        <CardContent className="p-6">
+                            <div className="flex items-center space-x-2">
+                                <Input id="file" type="file" multiple onChange={handleFileChange} className="rounded-md flex-grow" />
+                                <Button asChild variant="secondary" className="rounded-md">
+                                    <Label htmlFor="file" className="cursor-pointer">
+                                        <Upload className="mr-2 h-4 w-4" /> Import
+                                    </Label>
+                                </Button>
+                            </div>
+                            <div className="mt-4 space-y-2">
+                                {project.files.map((file, index) => (
+                                    <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded-md">
+                                        <span className="truncate">{file.name}</span>
+                                        <Button onClick={() => removeFile(index)} variant="ghost" size="sm" className="rounded-full">
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Button type="submit" className="w-full" style={{ backgroundColor: "#FAA502", color: "white" }}>Creează Proiect</Button>
+                    <Button type="submit" className="w-full bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md py-2 text-lg font-semibold">
+                        Creează Proiect
+                    </Button>
                 </form>
             </div>
         </DashboardLayout>

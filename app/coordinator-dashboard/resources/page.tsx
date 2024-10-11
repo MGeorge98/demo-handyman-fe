@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Edit, Plus, Send, Trash } from "lucide-react"
+import { Edit, Plus, Send, Trash, AlertTriangle } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,19 +20,19 @@ import { DashboardLayout } from "@/components/layout"
 import { coordinatorLinks } from "../page"
 
 const initialMaterials = [
-    { id: 1, name: "Ciment", quantity: 100, unit: "kg" },
-    { id: 2, name: "Cărămizi", quantity: 1000, unit: "buc" },
-    { id: 3, name: "Vopsea lavabilă", quantity: 50, unit: "l" },
-    { id: 4, name: "Gresie", quantity: 200, unit: "m²" },
-    { id: 5, name: "Cabluri electrice", quantity: 500, unit: "m" },
+    { id: 1, name: "Detergent universal", quantity: 50, unit: "l", threshold: 20 },
+    { id: 2, name: "Soluție pentru geamuri", quantity: 30, unit: "l", threshold: 15 },
+    { id: 3, name: "Dezinfectant", quantity: 40, unit: "l", threshold: 20 },
+    { id: 4, name: "Saci menajeri", quantity: 1000, unit: "buc", threshold: 500 },
+    { id: 5, name: "Lavete microfibră", quantity: 200, unit: "buc", threshold: 100 },
 ]
 
 const initialTools = [
-    { id: 1, name: "Bormaşină", quantity: 5, status: "Disponibil" },
-    { id: 2, name: "Şurubelniţă electrică", quantity: 10, status: "În folosinţă" },
-    { id: 3, name: "Fierăstrău circular", quantity: 3, status: "În reparaţii" },
-    { id: 4, name: "Nivelă cu laser", quantity: 2, status: "Disponibil" },
-    { id: 5, name: "Compresor de aer", quantity: 1, status: "În folosinţă" },
+    { id: 1, name: "Mop profesional", quantity: 10, status: "Disponibil", lastMaintenance: "2024-02-15" },
+    { id: 2, name: "Aspirator industrial", quantity: 5, status: "În folosință", lastMaintenance: "2024-01-20" },
+    { id: 3, name: "Mașină de curățat pardoseli", quantity: 2, status: "În reparații", lastMaintenance: "2024-03-01" },
+    { id: 4, name: "Scară telescopică", quantity: 3, status: "Disponibil", lastMaintenance: "2024-02-28" },
+    { id: 5, name: "Kit curățare geamuri", quantity: 8, status: "În folosință", lastMaintenance: "2024-02-10" },
 ]
 
 export default function ResourceManagement() {
@@ -40,16 +40,17 @@ export default function ResourceManagement() {
     const [tools, setTools] = useState(initialTools)
     const [editingResource, setEditingResource] = useState(null)
     const [isAddingResource, setIsAddingResource] = useState(false)
-    const [newResource, setNewResource] = useState({ name: "", quantity: "", unit: "" })
+    const [newResource, setNewResource] = useState({ name: "", quantity: "", unit: "", threshold: "" })
     const [requestMessage, setRequestMessage] = useState("")
+    const [activeTab, setActiveTab] = useState("materials")
 
     const handleAddResource = (type) => {
         if (type === "material") {
-            setMaterials([...materials, { ...newResource, id: materials.length + 1 }])
+            setMaterials([...materials, { ...newResource, id: materials.length + 1, quantity: parseInt(newResource.quantity), threshold: parseInt(newResource.threshold) }])
         } else {
-            setTools([...tools, { ...newResource, id: tools.length + 1, status: "Disponibil" }])
+            setTools([...tools, { ...newResource, id: tools.length + 1, quantity: parseInt(newResource.quantity), status: "Disponibil", lastMaintenance: new Date().toISOString().split('T')[0] }])
         }
-        setNewResource({ name: "", quantity: "", unit: "" })
+        setNewResource({ name: "", quantity: "", unit: "", threshold: "" })
         setIsAddingResource(false)
         toast({
             title: "Resursă adăugată",
@@ -59,9 +60,9 @@ export default function ResourceManagement() {
 
     const handleEditResource = (type) => {
         if (type === "material") {
-            setMaterials(materials.map(m => m.id === editingResource.id ? editingResource : m))
+            setMaterials(materials.map(m => m.id === editingResource.id ? { ...editingResource, quantity: parseInt(editingResource.quantity), threshold: parseInt(editingResource.threshold) } : m))
         } else {
-            setTools(tools.map(t => t.id === editingResource.id ? editingResource : t))
+            setTools(tools.map(t => t.id === editingResource.id ? { ...editingResource, quantity: parseInt(editingResource.quantity) } : t))
         }
         setEditingResource(null)
         toast({
@@ -91,6 +92,8 @@ export default function ResourceManagement() {
         setRequestMessage("")
     }
 
+    const isLowStock = (material) => material.quantity <= material.threshold
+
     return (
         <DashboardLayout links={coordinatorLinks}>
             <div className="flex min-h-screen w-full flex-col bg-[#F4F7FA]">
@@ -98,25 +101,26 @@ export default function ResourceManagement() {
                     <div className="mx-auto max-w-6xl space-y-8">
                         <h1 className="text-3xl font-bold text-[#0A2747]">Gestionare Resurse</h1>
 
-                        <Tabs defaultValue="materials">
-                            <TabsList>
-                                <TabsTrigger value="materials">Materiale</TabsTrigger>
-                                <TabsTrigger value="tools">Unelte</TabsTrigger>
+                        <Tabs defaultValue="materials" value={activeTab} onValueChange={setActiveTab}>
+                            <TabsList className="grid w-full grid-cols-2 rounded-lg bg-muted p-1">
+                                <TabsTrigger value="materials" className="rounded-md">Materiale</TabsTrigger>
+                                <TabsTrigger value="tools" className="rounded-md">Unelte</TabsTrigger>
                             </TabsList>
                             <TabsContent value="materials">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Materiale Asignate</CardTitle>
-                                        <CardDescription>Listă cu toate materialele necesare proiectului</CardDescription>
+                                        <CardDescription className="text-gray-300">Listă cu toate materialele necesare proiectului</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
-                                        <ScrollArea className="h-[400px]">
+                                    <CardContent className="p-6">
+                                        <ScrollArea className="h-[400px] rounded-md border">
                                             <Table>
                                                 <TableHeader>
                                                     <TableRow>
                                                         <TableHead>Nume</TableHead>
                                                         <TableHead>Cantitate</TableHead>
                                                         <TableHead>Unitate</TableHead>
+                                                        <TableHead>Status</TableHead>
                                                         <TableHead>Acțiuni</TableHead>
                                                     </TableRow>
                                                 </TableHeader>
@@ -127,11 +131,22 @@ export default function ResourceManagement() {
                                                             <TableCell>{material.quantity}</TableCell>
                                                             <TableCell>{material.unit}</TableCell>
                                                             <TableCell>
+                                                                {isLowStock(material) ? (
+                                                                    <Badge variant="destructive" className="flex items-center space-x-1">
+                                                                        <AlertTriangle className="h-4 w-4" />
+                                                                        <span>Stoc Redus</span>
+                                                                    </Badge>
+                                                                ) : (
+                                                                    <Badge variant="success">Stoc Suficient</Badge>
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell>
                                                                 <div className="flex space-x-2">
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
                                                                         onClick={() => setEditingResource(material)}
+                                                                        className="rounded-md"
                                                                     >
                                                                         <Edit className="h-4 w-4" />
                                                                     </Button>
@@ -139,6 +154,7 @@ export default function ResourceManagement() {
                                                                         variant="outline"
                                                                         size="sm"
                                                                         onClick={() => handleDeleteResource("material", material.id)}
+                                                                        className="rounded-md"
                                                                     >
                                                                         <Trash className="h-4 w-4" />
                                                                     </Button>
@@ -150,27 +166,28 @@ export default function ResourceManagement() {
                                             </Table>
                                         </ScrollArea>
                                     </CardContent>
-                                    <CardFooter>
-                                        <Button onClick={() => setIsAddingResource(true)} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                    <CardFooter className="bg-gray-50 rounded-b-lg">
+                                        <Button onClick={() => setIsAddingResource(true)} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                             <Plus className="mr-2 h-4 w-4" /> Adaugă Material
                                         </Button>
                                     </CardFooter>
                                 </Card>
                             </TabsContent>
                             <TabsContent value="tools">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Unelte Asignate</CardTitle>
-                                        <CardDescription>Listă cu toate uneltele necesare proiectului</CardDescription>
+                                        <CardDescription className="text-gray-300">Listă cu toate uneltele necesare proiectului</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
-                                        <ScrollArea className="h-[400px]">
+                                    <CardContent className="p-6">
+                                        <ScrollArea className="h-[400px] rounded-md border">
                                             <Table>
                                                 <TableHeader>
                                                     <TableRow>
                                                         <TableHead>Nume</TableHead>
                                                         <TableHead>Cantitate</TableHead>
                                                         <TableHead>Status</TableHead>
+                                                        <TableHead>Ultima Întreținere</TableHead>
                                                         <TableHead>Acțiuni</TableHead>
                                                     </TableRow>
                                                 </TableHeader>
@@ -184,20 +201,23 @@ export default function ResourceManagement() {
                                                                     variant={
                                                                         tool.status === "Disponibil"
                                                                             ? "success"
-                                                                            : tool.status === "În folosinţă"
+                                                                            : tool.status === "În folosință"
                                                                                 ? "warning"
                                                                                 : "destructive"
                                                                     }
+                                                                    className="rounded-full"
                                                                 >
                                                                     {tool.status}
                                                                 </Badge>
                                                             </TableCell>
+                                                            <TableCell>{tool.lastMaintenance}</TableCell>
                                                             <TableCell>
                                                                 <div className="flex space-x-2">
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
                                                                         onClick={() => setEditingResource(tool)}
+                                                                        className="rounded-md"
                                                                     >
                                                                         <Edit className="h-4 w-4" />
                                                                     </Button>
@@ -205,6 +225,7 @@ export default function ResourceManagement() {
                                                                         variant="outline"
                                                                         size="sm"
                                                                         onClick={() => handleDeleteResource("tool", tool.id)}
+                                                                        className="rounded-md"
                                                                     >
                                                                         <Trash className="h-4 w-4" />
                                                                     </Button>
@@ -216,8 +237,8 @@ export default function ResourceManagement() {
                                             </Table>
                                         </ScrollArea>
                                     </CardContent>
-                                    <CardFooter>
-                                        <Button onClick={() => setIsAddingResource(true)} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                    <CardFooter className="bg-gray-50 rounded-b-lg">
+                                        <Button onClick={() => setIsAddingResource(true)} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                             <Plus className="mr-2 h-4 w-4" /> Adaugă Unealtă
                                         </Button>
                                     </CardFooter>
@@ -225,20 +246,21 @@ export default function ResourceManagement() {
                             </TabsContent>
                         </Tabs>
 
-                        <Card>
-                            <CardHeader>
+                        <Card className="border-none shadow-md">
+                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                 <CardTitle>Solicitare Resurse Suplimentare</CardTitle>
-                                <CardDescription>Trimiteți o cerere către manager pentru resurse adiționale</CardDescription>
+                                <CardDescription className="text-gray-300">Trimiteți o cerere către manager pentru resurse adiționale</CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="p-6">
                                 <Textarea
                                     placeholder="Descrieți resursele suplimentare necesare și motivul solicitării..."
                                     value={requestMessage}
                                     onChange={(e) => setRequestMessage(e.target.value)}
+                                    className="min-h-[100px] rounded-md"
                                 />
                             </CardContent>
-                            <CardFooter>
-                                <Button onClick={handleSendRequest} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                            <CardFooter className="bg-gray-50 rounded-b-lg">
+                                <Button onClick={handleSendRequest} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                     <Send className="mr-2 h-4 w-4" /> Trimite Solicitarea
                                 </Button>
                             </CardFooter>
@@ -247,9 +269,9 @@ export default function ResourceManagement() {
                 </main>
 
                 <Dialog open={editingResource !== null} onOpenChange={() => setEditingResource(null)}>
-                    <DialogContent>
+                    <DialogContent className="sm:max-w-[425px] rounded-lg">
                         <DialogHeader>
-                            <DialogTitle>Editare Resursă</DialogTitle>
+                            <DialogTitle>Editare  Resursă</DialogTitle>
                             <DialogDescription>Modificați detaliile resursei</DialogDescription>
                         </DialogHeader>
                         {editingResource && (
@@ -262,7 +284,7 @@ export default function ResourceManagement() {
                                         id="name"
                                         value={editingResource.name}
                                         onChange={(e) => setEditingResource({ ...editingResource, name: e.target.value })}
-                                        className="col-span-3"
+                                        className="col-span-3 rounded-md"
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
@@ -273,8 +295,8 @@ export default function ResourceManagement() {
                                         id="quantity"
                                         type="number"
                                         value={editingResource.quantity}
-                                        onChange={(e) => setEditingResource({ ...editingResource, quantity: parseInt(e.target.value) })}
-                                        className="col-span-3"
+                                        onChange={(e) => setEditingResource({ ...editingResource, quantity: e.target.value })}
+                                        className="col-span-3 rounded-md"
                                     />
                                 </div>
                                 {editingResource.unit && (
@@ -286,7 +308,21 @@ export default function ResourceManagement() {
                                             id="unit"
                                             value={editingResource.unit}
                                             onChange={(e) => setEditingResource({ ...editingResource, unit: e.target.value })}
-                                            className="col-span-3"
+                                            className="col-span-3 rounded-md"
+                                        />
+                                    </div>
+                                )}
+                                {editingResource.threshold && (
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="threshold" className="text-right">
+                                            Prag Minim
+                                        </Label>
+                                        <Input
+                                            id="threshold"
+                                            type="number"
+                                            value={editingResource.threshold}
+                                            onChange={(e) => setEditingResource({ ...editingResource, threshold: e.target.value })}
+                                            className="col-span-3 rounded-md"
                                         />
                                     </div>
                                 )}
@@ -299,21 +335,35 @@ export default function ResourceManagement() {
                                             value={editingResource.status}
                                             onValueChange={(value) => setEditingResource({ ...editingResource, status: value })}
                                         >
-                                            <SelectTrigger className="col-span-3">
+                                            <SelectTrigger className="col-span-3 rounded-md">
                                                 <SelectValue placeholder="Selectează status" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="Disponibil">Disponibil</SelectItem>
-                                                <SelectItem value="În folosinţă">În folosinţă</SelectItem>
-                                                <SelectItem value="În reparaţii">În reparaţii</SelectItem>
+                                                <SelectItem value="În folosință">În folosință</SelectItem>
+                                                <SelectItem value="În reparații">În reparații</SelectItem>
                                             </SelectContent>
                                         </Select>
+                                    </div>
+                                )}
+                                {editingResource.lastMaintenance && (
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="lastMaintenance" className="text-right">
+                                            Ultima Întreținere
+                                        </Label>
+                                        <Input
+                                            id="lastMaintenance"
+                                            type="date"
+                                            value={editingResource.lastMaintenance}
+                                            onChange={(e) => setEditingResource({ ...editingResource, lastMaintenance: e.target.value })}
+                                            className="col-span-3 rounded-md"
+                                        />
                                     </div>
                                 )}
                             </div>
                         )}
                         <DialogFooter>
-                            <Button onClick={() => handleEditResource(editingResource.unit ? "material" : "tool")}>
+                            <Button onClick={() => handleEditResource(editingResource.unit ? "material" : "tool")} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                 Salvează Modificările
                             </Button>
                         </DialogFooter>
@@ -321,7 +371,7 @@ export default function ResourceManagement() {
                 </Dialog>
 
                 <Dialog open={isAddingResource} onOpenChange={setIsAddingResource}>
-                    <DialogContent>
+                    <DialogContent className="sm:max-w-[425px] rounded-lg">
                         <DialogHeader>
                             <DialogTitle>Adăugare Resursă Nouă</DialogTitle>
                             <DialogDescription>Introduceți detaliile noii resurse</DialogDescription>
@@ -335,7 +385,7 @@ export default function ResourceManagement() {
                                     id="new-name"
                                     value={newResource.name}
                                     onChange={(e) => setNewResource({ ...newResource, name: e.target.value })}
-                                    className="col-span-3"
+                                    className="col-span-3 rounded-md"
                                 />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
@@ -343,28 +393,43 @@ export default function ResourceManagement() {
                                     Cantitate
                                 </Label>
                                 <Input
-
                                     id="new-quantity"
                                     type="number"
                                     value={newResource.quantity}
                                     onChange={(e) => setNewResource({ ...newResource, quantity: e.target.value })}
-                                    className="col-span-3"
+                                    className="col-span-3 rounded-md"
                                 />
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="new-unit" className="text-right">
-                                    Unitate
-                                </Label>
-                                <Input
-                                    id="new-unit"
-                                    value={newResource.unit}
-                                    onChange={(e) => setNewResource({ ...newResource, unit: e.target.value })}
-                                    className="col-span-3"
-                                />
-                            </div>
+                            {activeTab === "materials" && (
+                                <>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="new-unit" className="text-right">
+                                            Unitate
+                                        </Label>
+                                        <Input
+                                            id="new-unit"
+                                            value={newResource.unit}
+                                            onChange={(e) => setNewResource({ ...newResource, unit: e.target.value })}
+                                            className="col-span-3 rounded-md"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="new-threshold" className="text-right">
+                                            Prag Minim
+                                        </Label>
+                                        <Input
+                                            id="new-threshold"
+                                            type="number"
+                                            value={newResource.threshold}
+                                            onChange={(e) => setNewResource({ ...newResource, threshold: e.target.value })}
+                                            className="col-span-3 rounded-md"
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
                         <DialogFooter>
-                            <Button onClick={() => handleAddResource(newResource.unit ? "material" : "tool")}>
+                            <Button onClick={() => handleAddResource(activeTab === "materials" ? "material" : "tool")} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                 Adaugă Resursă
                             </Button>
                         </DialogFooter>

@@ -17,8 +17,9 @@ import { coordinatorLinks } from "../page"
 export default function SettingsAndProfile() {
     const [personalInfo, setPersonalInfo] = useState({
         name: "Ana Popescu",
-        email: "ana.popescu@example.com",
-        phone: "0722123456"
+        email: "ana.popescu@cleaningpro.com",
+        phone: "0722123456",
+        role: "Coordonator Echipă"
     })
 
     const [password, setPassword] = useState({
@@ -63,6 +64,14 @@ export default function SettingsAndProfile() {
             })
             return
         }
+        if (password.new.length < 8) {
+            toast({
+                title: "Eroare",
+                description: "Noua parolă trebuie să aibă cel puțin 8 caractere.",
+                variant: "destructive",
+            })
+            return
+        }
         toast({
             title: "Parolă schimbată",
             description: "Parola dvs. a fost actualizată cu succes.",
@@ -85,46 +94,50 @@ export default function SettingsAndProfile() {
                     <div className="mx-auto max-w-4xl space-y-8">
                         <h1 className="text-3xl font-bold text-[#0A2747]">Setări și Profil</h1>
 
-                        <Tabs defaultValue="personal-info">
-                            <TabsList className="mb-4">
-                                <TabsTrigger value="personal-info">
+                        <Tabs defaultValue="personal-info" className="space-y-4">
+                            <TabsList className="bg-[#0A2747] text-white">
+                                <TabsTrigger value="personal-info" className="data-[state=active]:bg-[#FAA502]">
                                     <User className="mr-2 h-4 w-4" />
                                     Informații Personale
                                 </TabsTrigger>
-                                <TabsTrigger value="security">
+                                <TabsTrigger value="security" className="data-[state=active]:bg-[#FAA502]">
                                     <Lock className="mr-2 h-4 w-4" />
                                     Securitate
                                 </TabsTrigger>
-                                <TabsTrigger value="notifications">
+                                <TabsTrigger value="notifications" className="data-[state=active]:bg-[#FAA502]">
                                     <Bell className="mr-2 h-4 w-4" />
                                     Notificări
                                 </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="personal-info">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Informații Personale</CardTitle>
-                                        <CardDescription>Actualizați-vă datele personale și de contact</CardDescription>
+                                        <CardDescription className="text-gray-300">Actualizați-vă datele personale și de contact</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6">
                                         <form className="space-y-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="name">Nume Complet</Label>
-                                                <Input id="name" name="name" value={personalInfo.name} onChange={handlePersonalInfoChange} />
+                                                <Input id="name" name="name" value={personalInfo.name} onChange={handlePersonalInfoChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="email">Email</Label>
-                                                <Input id="email" name="email" type="email" value={personalInfo.email} onChange={handlePersonalInfoChange} />
+                                                <Input id="email" name="email" type="email" value={personalInfo.email} onChange={handlePersonalInfoChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="phone">Telefon</Label>
-                                                <Input id="phone" name="phone" type="tel" value={personalInfo.phone} onChange={handlePersonalInfoChange} />
+                                                <Input id="phone" name="phone" type="tel" value={personalInfo.phone} onChange={handlePersonalInfoChange} className="rounded-md" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="role">Rol</Label>
+                                                <Input id="role" name="role" value={personalInfo.role} readOnly className="rounded-md bg-gray-100" />
                                             </div>
                                         </form>
                                     </CardContent>
-                                    <CardFooter>
-                                        <Button onClick={handleSavePersonalInfo} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                    <CardFooter className="bg-gray-50 rounded-b-lg">
+                                        <Button onClick={handleSavePersonalInfo} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                             Salvează Modificările
                                         </Button>
                                     </CardFooter>
@@ -132,29 +145,29 @@ export default function SettingsAndProfile() {
                             </TabsContent>
 
                             <TabsContent value="security">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Securitate</CardTitle>
-                                        <CardDescription>Gestionați-vă parola și setările de securitate</CardDescription>
+                                        <CardDescription className="text-gray-300">Gestionați-vă parola și setările de securitate</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6">
                                         <form className="space-y-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="current-password">Parola Curentă</Label>
-                                                <Input id="current-password" name="current" type="password" value={password.current} onChange={handlePasswordChange} />
+                                                <Input id="current-password" name="current" type="password" value={password.current} onChange={handlePasswordChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="new-password">Parola Nouă</Label>
-                                                <Input id="new-password" name="new" type="password" value={password.new} onChange={handlePasswordChange} />
+                                                <Input id="new-password" name="new" type="password" value={password.new} onChange={handlePasswordChange} className="rounded-md" />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="confirm-password">Confirmă Parola Nouă</Label>
-                                                <Input id="confirm-password" name="confirm" type="password" value={password.confirm} onChange={handlePasswordChange} />
+                                                <Input id="confirm-password" name="confirm" type="password" value={password.confirm} onChange={handlePasswordChange} className="rounded-md" />
                                             </div>
                                         </form>
                                     </CardContent>
-                                    <CardFooter>
-                                        <Button onClick={handleChangePassword} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                    <CardFooter className="bg-gray-50 rounded-b-lg">
+                                        <Button onClick={handleChangePassword} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                             Schimbă Parola
                                         </Button>
                                     </CardFooter>
@@ -162,17 +175,17 @@ export default function SettingsAndProfile() {
                             </TabsContent>
 
                             <TabsContent value="notifications">
-                                <Card>
-                                    <CardHeader>
+                                <Card className="border-none shadow-md">
+                                    <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                         <CardTitle>Setări Notificări</CardTitle>
-                                        <CardDescription>Gestionați preferințele de notificare</CardDescription>
+                                        <CardDescription className="text-gray-300">Gestionați preferințele de notificare</CardDescription>
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="p-6">
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="space-y-0.5">
                                                     <Label htmlFor="email-notifications">Notificări Email</Label>
-                                                    <p className="text-sm text-muted-foreground">Primiți actualizări prin email</p>
+                                                    <p className="text-sm text-muted-foreground">Primiți actualizări prin email despre proiecte și sarcini</p>
                                                 </div>
                                                 <Switch
                                                     id="email-notifications"
@@ -184,7 +197,7 @@ export default function SettingsAndProfile() {
                                             <div className="flex items-center justify-between">
                                                 <div className="space-y-0.5">
                                                     <Label htmlFor="push-notifications">Notificări Push</Label>
-                                                    <p className="text-sm text-muted-foreground">Primiți notificări push pe dispozitiv</p>
+                                                    <p className="text-sm text-muted-foreground">Primiți notificări push pe dispozitiv pentru actualizări urgente</p>
                                                 </div>
                                                 <Switch
                                                     id="push-notifications"
@@ -196,7 +209,7 @@ export default function SettingsAndProfile() {
                                             <div className="flex items-center justify-between">
                                                 <div className="space-y-0.5">
                                                     <Label htmlFor="sms-notifications">Notificări SMS</Label>
-                                                    <p className="text-sm text-muted-foreground">Primiți notificări prin SMS</p>
+                                                    <p className="text-sm text-muted-foreground">Primiți notificări prin SMS pentru schimbări de program</p>
                                                 </div>
                                                 <Switch
                                                     id="sms-notifications"
@@ -206,8 +219,8 @@ export default function SettingsAndProfile() {
                                             </div>
                                         </div>
                                     </CardContent>
-                                    <CardFooter>
-                                        <Button onClick={handleSaveNotifications} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                    <CardFooter className="bg-gray-50 rounded-b-lg">
+                                        <Button onClick={handleSaveNotifications} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90 rounded-md">
                                             Salvează Preferințele
                                         </Button>
                                     </CardFooter>

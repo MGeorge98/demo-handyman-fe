@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, addMonths, startOfMonth, endOfMonth, isSameMonth, isSameDay, parseISO, isWithinInterval, addDays, subDays } from 'date-fns'
 import { ro } from 'date-fns/locale'
-import { ChevronLeft, ChevronRight, Plus, Clock, Edit2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Clock, Edit2, Trash2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -41,24 +41,24 @@ type Project = {
 }
 
 const teams: Team[] = [
-    { id: '1', name: 'Echipa Alpha', skills: ['Construcții', 'Electricitate'], color: '#FAA502' },
-    { id: '2', name: 'Echipa Beta', skills: ['Instalații', 'Finisaje'], color: '#4CAF50' },
-    { id: '3', name: 'Echipa Gamma', skills: ['Design', 'Proiectare'], color: '#2196F3' },
+    { id: '1', name: 'Echipa Rezidențială', skills: ['Curățenie generală', 'Curățare covoare'], color: '#FAA502' },
+    { id: '2', name: 'Echipa Comercială', skills: ['Curățenie birouri', 'Curățare geamuri'], color: '#4CAF50' },
+    { id: '3', name: 'Echipa Industrială', skills: ['Curățenie fabrici', 'Decontaminare'], color: '#2196F3' },
 ]
 
 const initialProjects: Project[] = [
-    { id: '1', name: 'Proiect A', teamId: '1', start: '2024-03-01', end: '2024-03-15' },
-    { id: '2', name: 'Proiect B', teamId: '2', start: '2024-03-05', end: '2024-03-20' },
-    { id: '3', name: 'Proiect C', teamId: '3', start: '2024-03-10', end: '2024-03-25' },
+    { id: '1', name: 'Curățenie Sediu Central BankCorp', teamId: '2', start: '2024-03-01', end: '2024-03-15' },
+    { id: '2', name: 'Mentenanță Mall Shopville', teamId: '2', start: '2024-03-05', end: '2024-03-20' },
+    { id: '3', name: 'Curățenie Post-Construcție Green Park', teamId: '1', start: '2024-03-10', end: '2024-03-25' },
 ]
 
 const initialActivities: Activity[] = [
-    { id: '1', projectId: '1', teamId: '1', date: '2024-03-01', startTime: '09:00', endTime: '17:00' },
-    { id: '2', projectId: '1', teamId: '1', date: '2024-03-02', startTime: '09:00', endTime: '17:00' },
+    { id: '1', projectId: '1', teamId: '2', date: '2024-03-01', startTime: '09:00', endTime: '17:00' },
+    { id: '2', projectId: '1', teamId: '2', date: '2024-03-02', startTime: '09:00', endTime: '17:00' },
     { id: '3', projectId: '2', teamId: '2', date: '2024-03-05', startTime: '08:00', endTime: '16:00' },
     { id: '4', projectId: '2', teamId: '2', date: '2024-03-06', startTime: '08:00', endTime: '16:00' },
-    { id: '5', projectId: '3', teamId: '3', date: '2024-03-10', startTime: '10:00', endTime: '18:00' },
-    { id: '6', projectId: '3', teamId: '3', date: '2024-03-11', startTime: '10:00', endTime: '18:00' },
+    { id: '5', projectId: '3', teamId: '1', date: '2024-03-10', startTime: '10:00', endTime: '18:00' },
+    { id: '6', projectId: '3', teamId: '1', date: '2024-03-11', startTime: '10:00', endTime: '18:00' },
 ]
 
 export default function CalendarInteractivEchipeImbunatatit() {
@@ -109,7 +109,7 @@ export default function CalendarInteractivEchipeImbunatatit() {
     return (
         <DashboardLayout links={managerLinks}>
             <div className="min-h-screen bg-[#F4F7FA] p-4 sm:p-6 md:p-8">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Calendar și Activitate Echipe</h1>
+                <h1 className="text-3xl font-bold mb-6 text-[#0A2747]">Calendar și Activitate Echipe</h1>
 
                 <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
                     <div className="flex items-center space-x-2">
@@ -168,7 +168,7 @@ export default function CalendarInteractivEchipeImbunatatit() {
                     </div>
                 </div>
 
-                <Card className="overflow-hidden">
+                <Card className="overflow-hidden border-none shadow-md">
                     <CardContent className="p-0">
                         <CalendarGrid
                             days={getDaysToRender()}
@@ -295,7 +295,7 @@ function CalendarDay({
     )
 }
 
-function TeamDaySchedule({ team, activities, projects }: { team: Team, activities: Activity[], projects: Project[] }) {
+function TeamDaySchedule({ team, activities, projects }: { team: Team, activities: Activity[], projects:  Project[] }) {
     return (
         <div className="text-xs">
             <div className="font-semibold" style={{ color: team.color }}>{team.name}</div>
@@ -418,7 +418,7 @@ function DayEditForm({
                             />
                         </div>
                     </div>
-                    <Button type="submit">Adaugă Activitate</Button>
+                    <Button type="submit" className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">Adaugă Activitate</Button>
                 </form>
             </div>
         </div>
@@ -478,8 +478,10 @@ function ActivityEditItem({
                 onChange={(e) => setEditedActivity({ ...editedActivity, endTime: e.target.value })}
                 className="w-24"
             />
-            <Button onClick={handleUpdate} size="sm">Actualizează</Button>
-            <Button onClick={() => onDeleteActivity(activity.id)} variant="destructive" size="sm">Șterge</Button>
+            <Button onClick={handleUpdate} size="sm" className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">Actualizează</Button>
+            <Button onClick={() => onDeleteActivity(activity.id)} variant="destructive" size="sm">
+                <Trash2 className="h-4 w-4" />
+            </Button>
         </div>
     )
 }

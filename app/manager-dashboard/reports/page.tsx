@@ -16,27 +16,27 @@ import { managerLinks } from "../page"
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
 
 const performanceData = [
-    { name: 'Ian', Frontend: 65, Backend: 78, Design: 72 },
-    { name: 'Feb', Frontend: 70, Backend: 82, Design: 75 },
-    { name: 'Mar', Frontend: 75, Backend: 85, Design: 80 },
-    { name: 'Apr', Frontend: 72, Backend: 87, Design: 78 },
-    { name: 'Mai', Frontend: 78, Backend: 90, Design: 82 },
-    { name: 'Iun', Frontend: 82, Backend: 92, Design: 85 },
+    { name: 'Ian', Rezidențial: 85, Comercial: 78, Industrial: 72 },
+    { name: 'Feb', Rezidențial: 88, Comercial: 82, Industrial: 75 },
+    { name: 'Mar', Rezidențial: 90, Comercial: 85, Industrial: 80 },
+    { name: 'Apr', Rezidențial: 92, Comercial: 87, Industrial: 82 },
+    { name: 'Mai', Rezidențial: 95, Comercial: 90, Industrial: 85 },
+    { name: 'Iun', Rezidențial: 97, Comercial: 92, Industrial: 88 },
 ]
 
 const projectStatusData = [
-    { name: 'În desfășurare', value: 5 },
-    { name: 'Finalizate', value: 3 },
+    { name: 'În desfășurare', value: 15 },
+    { name: 'Finalizate', value: 30 },
+    { name: 'Programate', value: 10 },
     { name: 'În întârziere', value: 2 },
-    { name: 'Anulate', value: 1 },
 ]
 
 const teamPerformanceData = [
-    { name: 'Frontend', performanță: 82 },
-    { name: 'Backend', performanță: 92 },
-    { name: 'Design', performanță: 85 },
-    { name: 'QA', performanță: 88 },
-    { name: 'Management', performanță: 90 },
+    { name: 'Rezidențial', performanță: 92 },
+    { name: 'Comercial', performanță: 88 },
+    { name: 'Industrial', performanță: 85 },
+    { name: 'Sănătate', performanță: 95 },
+    { name: 'Eco-Friendly', performanță: 90 },
 ]
 
 export default function ReportsAndStatistics() {
@@ -68,12 +68,12 @@ export default function ReportsAndStatistics() {
                     <div className="mx-auto max-w-6xl space-y-8">
                         <h1 className="text-3xl font-bold text-[#0A2747]">Rapoarte și Statistici</h1>
 
-                        <Card>
-                            <CardHeader>
+                        <Card className="border-none shadow-md">
+                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                 <CardTitle>Generare Raport Personalizat</CardTitle>
-                                <CardDescription>Selectați criteriile pentru generarea raportului</CardDescription>
+                                <CardDescription className="text-gray-300">Selectați criteriile pentru generarea raportului</CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="p-6">
                                 <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                                     <div className="space-y-2">
                                         <Label htmlFor="report-type">Tip Raport</Label>
@@ -85,6 +85,7 @@ export default function ReportsAndStatistics() {
                                                 <SelectItem value="performanță">Performanță</SelectItem>
                                                 <SelectItem value="proiecte">Proiecte</SelectItem>
                                                 <SelectItem value="resurse">Resurse Umane</SelectItem>
+                                                <SelectItem value="clienti">Satisfacție Clienți</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -104,9 +105,11 @@ export default function ReportsAndStatistics() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="all">Toate echipele</SelectItem>
-                                                <SelectItem value="frontend">Frontend</SelectItem>
-                                                <SelectItem value="backend">Backend</SelectItem>
-                                                <SelectItem value="design">Design</SelectItem>
+                                                <SelectItem value="rezidential">Rezidențial</SelectItem>
+                                                <SelectItem value="comercial">Comercial</SelectItem>
+                                                <SelectItem value="industrial">Industrial</SelectItem>
+                                                <SelectItem value="sanatate">Sănătate</SelectItem>
+                                                <SelectItem value="eco">Eco-Friendly</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -125,7 +128,7 @@ export default function ReportsAndStatistics() {
                                         </Select>
                                     </div>
                                 </div>
-                                <div className="mt-6 flex justify-between">
+                                <div className="mt-6 flex flex-wrap justify-between gap-4">
                                     <Button onClick={handleGenerateReport} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
                                         Generează Raport
                                     </Button>
@@ -143,12 +146,12 @@ export default function ReportsAndStatistics() {
                             </CardContent>
                         </Card>
 
-                        <Card>
-                            <CardHeader>
+                        <Card className="border-none shadow-md">
+                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
                                 <CardTitle>Vizualizare Statistici</CardTitle>
-                                <CardDescription>Tendințe și zone de îmbunătățire</CardDescription>
+                                <CardDescription className="text-gray-300">Tendințe și zone de îmbunătățire</CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="p-6">
                                 <Tabs defaultValue="performance">
                                     <TabsList className="mb-4">
                                         <TabsTrigger value="performance">
@@ -173,9 +176,9 @@ export default function ReportsAndStatistics() {
                                                     <YAxis />
                                                     <Tooltip />
                                                     <Legend />
-                                                    <Line type="monotone" dataKey="Frontend" stroke="#8884d8" />
-                                                    <Line type="monotone" dataKey="Backend" stroke="#82ca9d" />
-                                                    <Line type="monotone" dataKey="Design" stroke="#ffc658" />
+                                                    <Line type="monotone" dataKey="Rezidențial" stroke="#8884d8" />
+                                                    <Line type="monotone" dataKey="Comercial" stroke="#82ca9d" />
+                                                    <Line type="monotone" dataKey="Industrial" stroke="#ffc658" />
                                                 </LineChartComponent>
                                             </ResponsiveContainer>
                                         </div>

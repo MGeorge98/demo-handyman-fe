@@ -19,12 +19,12 @@ import { DashboardLayout } from '@/components/layout'
 import { managerLinks } from '../manager-dashboard/page'
 
 export const coordinatorLinks = [
-  { href: "/coordinator-dashboard", label: "Dashboard", icon: <Home /> },
-  { href: "/coordinator-dashboard/project-details", label: "Detalii Proiect", icon: <Users className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/employees", label: "Gestionare Angajati", icon: <Settings className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/resources", label: "Resurse", icon: <Settings className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/time-tracking", label: "Pontaj", icon: <Settings className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/daily-reporting", label: "Raportare Zilnica", icon: <Settings className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard", label: "Dashboard", icon: <Home className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard/project-details", label: "Detalii Proiect", icon: <Briefcase className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard/employees", label: "Gestionare Angajati", icon: <Users className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard/resources", label: "Resurse", icon: <BarChart2 className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard/time-tracking", label: "Pontaj", icon: <Clock className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard/daily-reporting", label: "Raportare Zilnica", icon: <CheckCircle className="h-4 w-4" /> },
   { href: "/coordinator-dashboard/settings", label: "Setari", icon: <Settings className="h-4 w-4" /> },
 ]
 
@@ -61,7 +61,6 @@ export default function CoordinatorDashboard() {
   )
 
   const handleAddEmployee = () => {
-    // Here you would typically send this data to your backend
     console.log('New employee added:', newEmployee)
     setIsAddEmployeeOpen(false)
     setNewEmployee({ name: '', role: '', email: '' })
@@ -69,46 +68,45 @@ export default function CoordinatorDashboard() {
 
   const handleEmployeeAction = (action, employee) => {
     console.log(`${action} employee:`, employee)
-    // Here you would typically update the backend and then refresh the employee list
     setSelectedEmployee(null)
   }
 
   return (
     <DashboardLayout links={coordinatorLinks}>
-      <div className="min-h-screen bg-[#f4f7fa]">
-        <main className="container mx-auto p-4 space-y-6">
+      <div className="min-h-screen bg-[#f4f7fa] p-6">
+        <main className="container mx-auto space-y-8">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-[#0A2647]">Bun venit, Coordonator!</h2>
-            <Button className="bg-[#FFA500] hover:bg-[#FF8C00] text-white" onClick={() => setIsTeamManagementOpen(true)}>
+            <h2 className="text-3xl font-bold text-[#0A2647]">Bun venit, Coordonator!</h2>
+            <Button className="bg-[#FAA502] hover:bg-[#E69500] text-white" onClick={() => setIsTeamManagementOpen(true)}>
               <Users className="mr-2 h-4 w-4" /> Gestionare Echipă
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="rounded-md shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Proiecte Active</CardTitle>
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                <Briefcase className="h-5 w-5 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{projects.filter(p => p.status !== "Finalizat").length}</div>
                 <p className="text-xs text-muted-foreground">din {projects.length} total</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="rounded-md shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Echipe Active</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-5 w-5 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">4</div>
                 <p className="text-xs text-muted-foreground">gestionează echipele</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="rounded-md shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Ore Lucrate Astăzi</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="h-5 w-5 text-[#FAA502]" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">156</div>
@@ -117,34 +115,35 @@ export default function CoordinatorDashboard() {
             </Card>
           </div>
 
-          <Card>
+          <Card className="rounded-md shadow-md">
             <CardHeader>
-              <CardTitle>Proiecte Active</CardTitle>
-              <div className="flex items-center space-x-2">
-                <Search className="w-4 h-4 text-muted-foreground" />
+              <CardTitle className="text-xl font-bold">Proiecte Active</CardTitle>
+              <div className="flex items-center space-x-2 mt-2">
+                <Search className="w-5 h-5 text-muted-foreground" />
                 <Input
                   placeholder="Caută proiecte..."
                   value={projectFilter}
                   onChange={(e) => setProjectFilter(e.target.value)}
-                  className="max-w-sm"
+                  className="max-w-sm rounded-md"
                 />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {filteredProjects.map((project) => (
-                  <div key={project.id}>
+                  <div key={project.id} className="bg-white p-4 rounded-lg shadow">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-medium">{project.name}</h4>
+                      <h4 className="text-lg font-medium">{project.name}</h4>
                       <Badge
                         variant={project.status === "În desfășurare" ? "default" :
                           project.status === "În așteptare" ? "secondary" : "success"}
+                        className="rounded-full px-3 py-1"
                       >
                         {project.status}
                       </Badge>
                     </div>
-                    <Progress value={project.progress} className="h-2" />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <Progress value={project.progress} className="h-2 mb-2" />
+                    <div className="flex justify-between text-sm text-muted-foreground">
                       <span>Echipa: {project.team}</span>
                       <span>Progres: {project.progress}%</span>
                       <span>Termen: {project.dueDate}</span>
@@ -156,19 +155,19 @@ export default function CoordinatorDashboard() {
           </Card>
 
           <Dialog open={isTeamManagementOpen} onOpenChange={setIsTeamManagementOpen}>
-            <DialogContent className="sm:max-w-[800px]">
+            <DialogContent className="sm:max-w-[800px] rounded-xl">
               <DialogHeader>
-                <DialogTitle>Gestionare Echipă</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">Gestionare Echipă</DialogTitle>
                 <DialogDescription>
                   Gestionează membrii echipei și asignează-i la proiecte.
                 </DialogDescription>
               </DialogHeader>
-              <Tabs defaultValue="members" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="members">Membri Echipă</TabsTrigger>
-                  <TabsTrigger value="projects">Asignare Proiecte</TabsTrigger>
+              <Tabs defaultValue="members" className="w-full mt-4">
+                <TabsList className="bg-[#0A2747] text-white">
+                  <TabsTrigger value="members" className="data-[state=active]:bg-[#FAA502]">Membri Echipă</TabsTrigger>
+                  <TabsTrigger value="projects" className="data-[state=active]:bg-[#FAA502]">Asignare Proiecte</TabsTrigger>
                 </TabsList>
-                <TabsContent value="members">
+                <TabsContent value="members" className="mt-4">
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold">Membri Echipă</h3>
@@ -177,15 +176,15 @@ export default function CoordinatorDashboard() {
                       </Button>
                     </div>
                     {employees.map((employee) => (
-                      <div key={employee.id} className="flex items-center justify-between p-2 bg-muted rounded-lg">
-                        <div className="flex items-center space-x-2">
+                      <div key={employee.id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
+                        <div className="flex items-center space-x-4">
                           <Avatar>
                             <AvatarImage src={employee.avatar} alt={employee.name} />
                             <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium">{employee.name}</p>
-                            <p className="text-xs text-muted-foreground">{employee.role}</p>
+                            <p className="font-medium">{employee.name}</p>
+                            <p className="text-sm text-muted-foreground">{employee.role}</p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -200,23 +199,23 @@ export default function CoordinatorDashboard() {
                     ))}
                   </div>
                 </TabsContent>
-                <TabsContent value="projects">
+                <TabsContent value="projects" className="mt-4">
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Asignare Proiecte</h3>
                     {projects.map((project) => (
-                      <div key={project.id} className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                      <div key={project.id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
                         <div>
-                          <p className="text-sm font-medium">{project.name}</p>
-                          <p className="text-xs text-muted-foreground">Echipa: {project.team}</p>
+                          <p className="font-medium">{project.name}</p>
+                          <p className="text-sm text-muted-foreground">Echipa: {project.team}</p>
                         </div>
                         <Select>
-                          <SelectTrigger className="w-[180px]">
+                          <SelectTrigger className="w-[180px] rounded-md">
                             <SelectValue placeholder="Selectează echipa" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="alpha">Echipa Alpha</SelectItem>
                             <SelectItem value="beta">Echipa Beta</SelectItem>
-                            <SelectItem value="gamma">Echipa  Gamma</SelectItem>
+                            <SelectItem value="gamma">Echipa Gamma</SelectItem>
                             <SelectItem value="delta">Echipa Delta</SelectItem>
                           </SelectContent>
                         </Select>
@@ -229,20 +228,21 @@ export default function CoordinatorDashboard() {
           </Dialog>
 
           <Dialog open={isAddEmployeeOpen} onOpenChange={setIsAddEmployeeOpen}>
-            <DialogContent>
+            <DialogContent className="rounded-xl">
               <DialogHeader>
-                <DialogTitle>Adaugă Membru Nou</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">Adaugă  Membru Nou</DialogTitle>
                 <DialogDescription>
                   Completează informațiile pentru noul membru al echipei.
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nume</Label>
                   <Input
                     id="name"
                     value={newEmployee.name}
                     onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                    className="rounded-md"
                   />
                 </div>
                 <div className="space-y-2">
@@ -251,7 +251,7 @@ export default function CoordinatorDashboard() {
                     value={newEmployee.role}
                     onValueChange={(value) => setNewEmployee({ ...newEmployee, role: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-md">
                       <SelectValue placeholder="Selectează rolul" />
                     </SelectTrigger>
                     <SelectContent>
@@ -268,6 +268,7 @@ export default function CoordinatorDashboard() {
                     type="email"
                     value={newEmployee.email}
                     onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                    className="rounded-md"
                   />
                 </div>
               </div>
@@ -278,23 +279,23 @@ export default function CoordinatorDashboard() {
           </Dialog>
 
           <Dialog open={!!selectedEmployee} onOpenChange={() => setSelectedEmployee(null)}>
-            <DialogContent>
+            <DialogContent className="rounded-xl">
               <DialogHeader>
-                <DialogTitle>Editează Membru</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">Editează Membru</DialogTitle>
                 <DialogDescription>
                   Modifică informațiile pentru {selectedEmployee?.name}.
                 </DialogDescription>
               </DialogHeader>
               {selectedEmployee && (
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="edit-name">Nume</Label>
-                    <Input id="edit-name" defaultValue={selectedEmployee.name} />
+                    <Input id="edit-name" defaultValue={selectedEmployee.name} className="rounded-md" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-role">Rol</Label>
                     <Select defaultValue={selectedEmployee.role}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-md">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -306,12 +307,12 @@ export default function CoordinatorDashboard() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-email">Email</Label>
-                    <Input id="edit-email" type="email" defaultValue={selectedEmployee.email} />
+                    <Input id="edit-email" type="email" defaultValue={selectedEmployee.email} className="rounded-md" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-team">Echipă</Label>
                     <Select defaultValue={selectedEmployee.team}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-md">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
