@@ -204,16 +204,7 @@ export default function EmployeeTimeTracking() {
                             </CardHeader>
                             <CardContent className="p-6">
                                 <div className="flex space-x-4 mb-4">
-                                    <div className="flex-1">
-                                        <Label htmlFor="date-select">Data</Label>
-                                        <Input
-                                            id="date-select"
-                                            type="date"
-                                            value={selectedDate}
-                                            onChange={(e) => setSelectedDate(e.target.value)}
-                                            className="rounded-md"
-                                        />
-                                    </div>
+                                    
                                     <div className="flex-1">
                                         <Label htmlFor="employee-select">Angajat</Label>
                                         <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>

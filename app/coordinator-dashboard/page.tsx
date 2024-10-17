@@ -20,11 +20,11 @@ import { managerLinks } from '../manager-dashboard/page'
 
 export const coordinatorLinks = [
   { href: "/coordinator-dashboard", label: "Dashboard", icon: <Home className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/project-details", label: "Detalii Proiect", icon: <Briefcase className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/employees", label: "Gestionare Angajati", icon: <Users className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/resources", label: "Resurse", icon: <BarChart2 className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/time-tracking", label: "Pontaj", icon: <Clock className="h-4 w-4" /> },
-  { href: "/coordinator-dashboard/daily-reporting", label: "Raportare Zilnica", icon: <CheckCircle className="h-4 w-4" /> },
+  { href: "/coordinator-dashboard/project-details", label: "Proiecte", icon: <Briefcase className="h-4 w-4" /> },
+  // { href: "/coordinator-dashboard/employees", label: "Gestionare Angajati", icon: <Users className="h-4 w-4" /> },
+  // { href: "/coordinator-dashboard/resources", label: "Resurse", icon: <BarChart2 className="h-4 w-4" /> },
+  // { href: "/coordinator-dashboard/time-tracking", label: "Pontaj", icon: <Clock className="h-4 w-4" /> },
+  // { href: "/coordinator-dashboard/daily-reporting", label: "Raportare Zilnica", icon: <CheckCircle className="h-4 w-4" /> },
   { href: "/coordinator-dashboard/settings", label: "Setari", icon: <Settings className="h-4 w-4" /> },
 ]
 

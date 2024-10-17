@@ -13,13 +13,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { DashboardLayout } from '@/components/layout'
 import { toast } from "@/hooks/use-toast"
+import { useRouter } from 'next/navigation'
 
 export const managerLinks = [
   { href: "/manager-dashboard", label: "Dashboard", icon: <Home className="h-4 w-4" /> },
   { href: "/manager-dashboard/clients", label: "Clienți", icon: <Users className="h-4 w-4" /> },
-  { href: "/manager-dashboard/create-project", label: "Creare Proiect", icon: <Plus className="h-4 w-4" /> },
+  // { href: "/manager-dashboard/create-project", label: "Proiecte ", icon: <Plus className="h-4 w-4" /> },
   { href: "/manager-dashboard/program", label: "Calendar", icon: <Calendar className="h-4 w-4" /> },
-  { href: "/manager-dashboard/active-projects", label: "Proiecte Active", icon: <BarChart2 className="h-4 w-4" /> },
+  { href: "/manager-dashboard/active-projects", label: "Proiecte", icon: <BarChart2 className="h-4 w-4" /> },
   { href: "/manager-dashboard/employees", label: "Gestionare Angajați", icon: <Users className="h-4 w-4" /> },
   { href: "/manager-dashboard/reports", label: "Rapoarte și Statistici", icon: <FileText className="h-4 w-4" /> },
   { href: "/manager-dashboard/settings", label: "Setări", icon: <Settings className="h-4 w-4" /> },
@@ -38,6 +39,7 @@ export default function ManagerDashboard() {
     endDate: '',
     assignedTeam: '',
   })
+  const router = useRouter();
 
   const jobs = [
     { name: "Curățenie Birouri A", progress: 75, time: 120, cost: 3000, profit: 15 },
@@ -59,37 +61,6 @@ export default function ManagerDashboard() {
   const filteredTeams = teams.filter(team => team.name.toLowerCase().includes(teamFilter.toLowerCase()))
   const filteredEmployees = employees.filter(employee => employee.name.toLowerCase().includes(employeeFilter.toLowerCase()))
 
-  const handleNewProjectChange = (e) => {
-    const { name, value } = e.target
-    setNewProject(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleNewProjectSubmit = (e) => {
-    e.preventDefault()
-    if (!newProject.name || !newProject.client || !newProject.startDate || !newProject.endDate || !newProject.assignedTeam) {
-      toast({
-        title: "Eroare",
-        description: "Vă rugăm să completați toate câmpurile obligatorii.",
-        variant: "destructive",
-      })
-      return
-    }
-    console.log('New Project Submitted:', newProject)
-    // Here you would typically send this data to your backend
-    setIsNewProjectModalOpen(false)
-    setNewProject({
-      name: '',
-      description: '',
-      client: '',
-      startDate: '',
-      endDate: '',
-      assignedTeam: '',
-    })
-    toast({
-      title: "Proiect creat",
-      description: "Noul proiect a fost adăugat cu succes.",
-    })
-  }
 
   return (
     <DashboardLayout links={managerLinks}>
@@ -97,108 +68,12 @@ export default function ManagerDashboard() {
         <main className="container mx-auto p-4 space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold text-[#0A2747]">Bun venit, Manager!</h2>
-            <Dialog open={isNewProjectModalOpen} onOpenChange={setIsNewProjectModalOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-[#FAA502] hover:bg-[#E69500] text-white">
-                  <Plus className="mr-2 h-4 w-4" /> Proiect Nou
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-white">
-                <DialogHeader>
-                  <DialogTitle className="text-[#0A2747]">Adaugă Proiect Nou</DialogTitle>
-                  <DialogDescription className="text-gray-500">
-                    Completează detaliile pentru noul proiect de curățenie.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleNewProjectSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-[#0A2747]">Nume Proiect</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={newProject.name}
-                      onChange={handleNewProjectChange}
-                      required
-                      className="border-[#0A2747]"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-[#0A2747]">Descriere</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
-                      value={newProject.description}
-                      onChange={handleNewProjectChange}
-                      className="border-[#0A2747]"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="client" className="text-[#0A2747]">Client</Label>
-                    <Input
-                      id="client"
-                      name="client"
-                      value={newProject.client}
-                      onChange={handleNewProjectChange}
-                      required
-                      className="border-[#0A2747]"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="startDate" className="text-[#0A2747]">Data Început</Label>
-                      <Input
-                        id="startDate"
-                        name="startDate"
-                        type="date"
-                        value={newProject.startDate}
-                        onChange={handleNewProjectChange}
-                        required
-                        className="border-[#0A2747]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="endDate" className="text-[#0A2747]">Data Sfârșit</Label>
-                      <Input
-                        id="endDate"
-                        name="endDate"
-                        type="date"
-                        value={newProject.endDate}
-                        onChange={handleNewProjectChange}
-                        required
-                        className="border-[#0A2747]"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="assignedTeam" className="text-[#0A2747]">Echipă Asignată</Label>
-                    <Select
-                      name="assignedTeam"
-                      value={newProject.assignedTeam}
-                      onValueChange={(value) => handleNewProjectChange({ target: { name: 'assignedTeam', value } })}
-                    >
-                      <SelectTrigger className="border-[#0A2747]">
-                        <SelectValue placeholder="Selectează o echipă" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {teams.map((team) => (
-                          <SelectItem key={team.name} value={team.name}>
-                            {team.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setIsNewProjectModalOpen(false)} className="border-[#0A2747] text-[#0A2747]">
-                      Anulează
-                    </Button>
-                    <Button type="submit" className="bg-[#FAA502] hover:bg-[#E69500] text-white">
-                      Adaugă Proiect
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button
+              className="bg-[#FAA502] hover:bg-[#E69500] text-white"
+              onClick={() => { router.push("/manager-dashboard/create-project") }}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Proiect Nou
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -272,7 +147,6 @@ export default function ManagerDashboard() {
               <TabsTrigger value="jobs" className="data-[state=active]:bg-[#FAA502]">Lucrări</TabsTrigger>
               <TabsTrigger value="teams" className="data-[state=active]:bg-[#FAA502]">Echipe</TabsTrigger>
               <TabsTrigger value="employees" className="data-[state=active]:bg-[#FAA502]">Angajați</TabsTrigger>
-            
             </TabsList>
             <TabsContent value="jobs">
               <Card className="bg-white shadow-md border-none">

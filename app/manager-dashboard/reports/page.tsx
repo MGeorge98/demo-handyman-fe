@@ -13,7 +13,7 @@ import { BarChart as BarChartComponent, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { DashboardLayout } from "@/components/layout"
 import { managerLinks } from "../page"
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+const COLORS = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#5856D6']
 
 const performanceData = [
     { name: 'Ian', Rezidențial: 85, Comercial: 78, Industrial: 72 },
@@ -62,23 +62,21 @@ export default function ReportsAndStatistics() {
     }
 
     return (
-        <DashboardLayout links={managerLinks}>
-            <div className="flex min-h-screen w-full flex-col bg-[#F4F7FA]">
+        <DashboardLayout links={managerLinks} title="Rapoarte și Statistici">
+            <div className="flex min-h-screen w-full flex-col bg-gray-50">
                 <main className="flex-1 p-6">
                     <div className="mx-auto max-w-6xl space-y-8">
-                        <h1 className="text-3xl font-bold text-[#0A2747]">Rapoarte și Statistici</h1>
-
-                        <Card className="border-none shadow-md">
-                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
-                                <CardTitle>Generare Raport Personalizat</CardTitle>
-                                <CardDescription className="text-gray-300">Selectați criteriile pentru generarea raportului</CardDescription>
+                        <Card className="overflow-hidden rounded-2xl border-none shadow-lg">
+                            <CardHeader className="bg-gradient-to-r from-gray-600 to-gray-800 text-white">
+                                <CardTitle className="text-2xl font-bold">Generare Raport Personalizat</CardTitle>
+                                <CardDescription className="text-gray-200">Selectați criteriile pentru generarea raportului</CardDescription>
                             </CardHeader>
                             <CardContent className="p-6">
                                 <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                                     <div className="space-y-2">
                                         <Label htmlFor="report-type">Tip Raport</Label>
                                         <Select value={reportType} onValueChange={setReportType}>
-                                            <SelectTrigger id="report-type">
+                                            <SelectTrigger id="report-type" className="rounded-full">
                                                 <SelectValue placeholder="Selectați tipul de raport" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -91,16 +89,16 @@ export default function ReportsAndStatistics() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="start-date">Data Început</Label>
-                                        <Input id="start-date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                                        <Input id="start-date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="rounded-full" />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="end-date">Data Sfârșit</Label>
-                                        <Input id="end-date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                                        <Input id="end-date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="rounded-full" />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="team">Echipă</Label>
                                         <Select value={team} onValueChange={setTeam}>
-                                            <SelectTrigger id="team">
+                                            <SelectTrigger id="team" className="rounded-full">
                                                 <SelectValue placeholder="Selectați echipa" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -116,7 +114,7 @@ export default function ReportsAndStatistics() {
                                     <div className="space-y-2">
                                         <Label htmlFor="employee">Angajat</Label>
                                         <Select value={employee} onValueChange={setEmployee}>
-                                            <SelectTrigger id="employee">
+                                            <SelectTrigger id="employee" className="rounded-full">
                                                 <SelectValue placeholder="Selectați angajatul" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -129,15 +127,15 @@ export default function ReportsAndStatistics() {
                                     </div>
                                 </div>
                                 <div className="mt-6 flex flex-wrap justify-between gap-4">
-                                    <Button onClick={handleGenerateReport} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                                    <Button onClick={handleGenerateReport} className="bg-blue-500 text-white hover:bg-blue-600 rounded-full">
                                         Generează Raport
                                     </Button>
                                     <div className="space-x-2">
-                                        <Button variant="outline" onClick={handleExportPDF}>
+                                        <Button variant="outline" onClick={handleExportPDF} className="rounded-full">
                                             <Download className="mr-2 h-4 w-4" />
                                             Export PDF
                                         </Button>
-                                        <Button variant="outline" onClick={handleExportExcel}>
+                                        <Button variant="outline" onClick={handleExportExcel} className="rounded-full">
                                             <Download className="mr-2 h-4 w-4" />
                                             Export Excel
                                         </Button>
@@ -146,23 +144,23 @@ export default function ReportsAndStatistics() {
                             </CardContent>
                         </Card>
 
-                        <Card className="border-none shadow-md">
-                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
-                                <CardTitle>Vizualizare Statistici</CardTitle>
-                                <CardDescription className="text-gray-300">Tendințe și zone de îmbunătățire</CardDescription>
+                        <Card className="overflow-hidden rounded-2xl border-none shadow-lg">
+                            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                                <CardTitle className="text-2xl font-bold">Vizualizare Statistici</CardTitle>
+                                <CardDescription className="text-gray-200">Tendințe și zone de îmbunătățire</CardDescription>
                             </CardHeader>
                             <CardContent className="p-6">
                                 <Tabs defaultValue="performance">
-                                    <TabsList className="mb-4">
-                                        <TabsTrigger value="performance">
+                                    <TabsList className="mb-4 bg-gray-100 p-1 rounded-full">
+                                        <TabsTrigger value="performance" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow">
                                             <LineChart className="mr-2 h-4 w-4" />
                                             Performanță
                                         </TabsTrigger>
-                                        <TabsTrigger value="projects">
+                                        <TabsTrigger value="projects" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow">
                                             <PieChart className="mr-2 h-4 w-4" />
                                             Stare Proiecte
                                         </TabsTrigger>
-                                        <TabsTrigger value="teams">
+                                        <TabsTrigger value="teams" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow">
                                             <BarChart className="mr-2 h-4 w-4" />
                                             Performanță Echipe
                                         </TabsTrigger>
@@ -176,9 +174,9 @@ export default function ReportsAndStatistics() {
                                                     <YAxis />
                                                     <Tooltip />
                                                     <Legend />
-                                                    <Line type="monotone" dataKey="Rezidențial" stroke="#8884d8" />
-                                                    <Line type="monotone" dataKey="Comercial" stroke="#82ca9d" />
-                                                    <Line type="monotone" dataKey="Industrial" stroke="#ffc658" />
+                                                    <Line type="monotone" dataKey="Rezidențial" stroke="#007AFF" />
+                                                    <Line type="monotone" dataKey="Comercial" stroke="#34C759" />
+                                                    <Line type="monotone" dataKey="Industrial" stroke="#FF9500" />
                                                 </LineChartComponent>
                                             </ResponsiveContainer>
                                         </div>
@@ -215,7 +213,7 @@ export default function ReportsAndStatistics() {
                                                     <YAxis />
                                                     <Tooltip />
                                                     <Legend />
-                                                    <Bar dataKey="performanță" fill="#8884d8" />
+                                                    <Bar dataKey="performanță" fill="#007AFF" />
                                                 </BarChartComponent>
                                             </ResponsiveContainer>
                                         </div>

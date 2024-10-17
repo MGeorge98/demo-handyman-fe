@@ -98,84 +98,59 @@ export default function ReportViewingExport() {
     }
 
     return (
-        <DashboardLayout links={adminLinks}>
-            <div className="flex min-h-screen w-full flex-col bg-[#F4F7FA]">
+        <DashboardLayout links={adminLinks} title="Vizualizare si Export Rapoarte">
+            <div className="flex min-h-screen w-full flex-col bg-gray-50">
                 <main className="flex-1 p-6">
                     <div className="mx-auto max-w-7xl space-y-8">
-                        <h1 className="text-3xl font-bold text-[#0A2747]">Vizualizare și Export Rapoarte</h1>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <Card className="bg-white shadow-md border-none">
-                                <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
-                                    <CardTitle>Proiecte Totale</CardTitle>
-                                </CardHeader>
-                                <CardContent className="pt-6">
-                                    <div className="text-3xl font-bold text-[#0A2747]">{globalStats.totalProjects}</div>
-                                    <p className="text-sm text-[#0A2747]">
-                                        Active: {globalStats.activeProjects} | Finalizate: {globalStats.completedProjects}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                            <Card className="bg-white shadow-md border-none">
-                                <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
-                                    <CardTitle>Angajați Totali</CardTitle>
-                                </CardHeader>
-                                <CardContent className="pt-6">
-                                    <div className="text-3xl font-bold text-[#0A2747]">{globalStats.totalEmployees}</div>
-                                    <p className="text-sm text-[#0A2747]">
-                                        Ore lucrate: {globalStats.totalHoursWorked}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                            <Card className="bg-white shadow-md border-none">
-                                <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
-                                    <CardTitle>Cost Total Resurse</CardTitle>
-                                </CardHeader>
-                                <CardContent className="pt-6">
-                                    <div className="text-3xl font-bold text-[#0A2747]">{globalStats.totalResourcesCost.toLocaleString()} RON</div>
-                                </CardContent>
-                            </Card>
-                        </div>
 
-                        <Card className="bg-white shadow-md border-none">
-                            <CardHeader className="bg-[#0A2747] text-white rounded-t-lg">
-                                <CardTitle>Rapoarte Generate</CardTitle>
-                                <CardDescription className="text-gray-300">Vizualizați și exportați rapoartele generate</CardDescription>
-                            </CardHeader>
-                            <CardContent className="pt-6">
-                                <div className="flex justify-between mb-4">
-                                    <Button onClick={() => setIsGenerateDialogOpen(true)} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">
+                        <Card className="bg-white shadow-lg border-none rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                        <div className="flex justify-between items-center">
+                                    <div>
+
+                                        <CardTitle className="text-2xl font-bold">Rapoarte Generate</CardTitle>
+                                        <CardDescription className="text-gray-200">Vizualizați și exportați rapoartele generate</CardDescription>
+                                    </div>
+                                    <Button
+                                        onClick={() => setIsGenerateDialogOpen(true)}
+                                        className="bg-white text-blue-600 hover:bg-blue-50 rounded-full"
+                                    >
                                         <Plus className="mr-2 h-4 w-4" /> Generează Raport Nou
                                     </Button>
-                                    <Button onClick={() => setIsScheduleDialogOpen(true)} variant="outline" className="border-[#0A2747] text-[#0A2747] hover:bg-[#0A2747] hover:text-white">
+                                </div>
+
+                            </CardHeader>
+                            <CardContent className="p-6">
+                                <div className="flex justify-between mb-6">
+                                    <Button onClick={() => setIsScheduleDialogOpen(true)} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors duration-200 rounded-full px-6 py-2 text-sm font-medium">
                                         <CalendarIcon className="mr-2 h-4 w-4" /> Programează Raport
                                     </Button>
                                 </div>
-                                <ScrollArea className="h-[400px]">
+                                <ScrollArea className="h-[400px] rounded-lg border border-gray-200">
                                     <Table>
                                         <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="text-[#0A2747]">Nume Raport</TableHead>
-                                                <TableHead className="text-[#0A2747]">Tip</TableHead>
-                                                <TableHead className="text-[#0A2747]">Data Generării</TableHead>
-                                                <TableHead className="text-[#0A2747]">Status</TableHead>
-                                                <TableHead className="text-[#0A2747]">Acțiuni</TableHead>
+                                            <TableRow className="bg-gray-50">
+                                                <TableHead className="text-gray-600 font-medium">Nume Raport</TableHead>
+                                                <TableHead className="text-gray-600 font-medium">Tip</TableHead>
+                                                <TableHead className="text-gray-600 font-medium">Data Generării</TableHead>
+                                                <TableHead className="text-gray-600 font-medium">Status</TableHead>
+                                                <TableHead className="text-gray-600 font-medium">Acțiuni</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {reports.map((report) => (
-                                                <TableRow key={report.id}>
-                                                    <TableCell className="font-medium">{report.name}</TableCell>
-                                                    <TableCell>{report.type}</TableCell>
-                                                    <TableCell>{report.date}</TableCell>
+                                                <TableRow key={report.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                                    <TableCell className="font-medium text-gray-900">{report.name}</TableCell>
+                                                    <TableCell className="text-gray-600">{report.type}</TableCell>
+                                                    <TableCell className="text-gray-600">{report.date}</TableCell>
                                                     <TableCell>
-                                                        <Badge 
+                                                        <Badge
                                                             variant={report.status === "Generat" ? "default" : "secondary"}
-                                                            className={`${
-                                                                report.status === "Generat" 
-                                                                    ? "bg-green-500 hover:bg-green-600" 
-                                                                    : "bg-yellow-500 hover:bg-yellow-600"
-                                                            } text-white rounded-full px-2 py-1 text-xs font-semibold`}
+                                                            className={`${report.status === "Generat"
+                                                                    ? "bg-green-100 text-green-800"
+                                                                    : "bg-yellow-100 text-yellow-800"
+                                                                } rounded-full px-2 py-1 text-xs font-medium`}
                                                         >
                                                             {report.status}
                                                         </Badge>
@@ -187,7 +162,7 @@ export default function ReportViewingExport() {
                                                                 size="sm"
                                                                 onClick={() => handleExportReport(report.id, 'PDF')}
                                                                 disabled={report.status !== "Generat"}
-                                                                className="border-[#0A2747] text-[#0A2747] hover:bg-[#0A2747] hover:text-white disabled:opacity-50"
+                                                                className="text-blue-600 border-blue-600 hover:bg-blue-50 disabled:opacity-50 rounded-full px-3 py-1 text-xs font-medium"
                                                             >
                                                                 <FileText className="h-4 w-4 mr-1" /> PDF
                                                             </Button>
@@ -196,7 +171,7 @@ export default function ReportViewingExport() {
                                                                 size="sm"
                                                                 onClick={() => handleExportReport(report.id, 'Excel')}
                                                                 disabled={report.status !== "Generat"}
-                                                                className="border-[#0A2747] text-[#0A2747] hover:bg-[#0A2747] hover:text-white disabled:opacity-50"
+                                                                className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50 rounded-full px-3 py-1 text-xs font-medium"
                                                             >
                                                                 <FileSpreadsheet className="h-4 w-4 mr-1" /> Excel
                                                             </Button>
@@ -213,32 +188,32 @@ export default function ReportViewingExport() {
                 </main>
 
                 <Dialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
-                    <DialogContent className="bg-white">
+                    <DialogContent className="bg-white rounded-2xl p-6 max-w-md">
                         <DialogHeader>
-                            <DialogTitle className="text-[#0A2747]">Generează Raport Nou</DialogTitle>
-                            <DialogDescription className="text-gray-500">Completați detaliile pentru noul raport</DialogDescription>
+                            <DialogTitle className="text-2xl font-semibold text-gray-900">Generează Raport Nou</DialogTitle>
+                            <DialogDescription className="text-gray-500 mt-2">Completați detaliile pentru noul raport</DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="report-name" className="text-right text-[#0A2747]">
+                        <div className="grid gap-6 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="report-name" className="text-sm font-medium text-gray-700">
                                     Nume Raport
                                 </Label>
                                 <Input
                                     id="report-name"
                                     value={newReport.name}
                                     onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
-                                    className="col-span-3 border-[#0A2747]"
+                                    className="rounded-lg border-gray-300"
                                 />
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="report-type" className="text-right text-[#0A2747]">
+                            <div className="grid gap-2">
+                                <Label htmlFor="report-type" className="text-sm font-medium text-gray-700">
                                     Tip Raport
                                 </Label>
                                 <Select
                                     value={newReport.type}
                                     onValueChange={(value) => setNewReport({ ...newReport, type: value })}
                                 >
-                                    <SelectTrigger className="col-span-3 border-[#0A2747]">
+                                    <SelectTrigger className="rounded-lg border-gray-300">
                                         <SelectValue placeholder="Selectează tipul de raport" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -250,18 +225,16 @@ export default function ReportViewingExport() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="start-date" className="text-right text-[#0A2747]">
+                            <div className="grid gap-2">
+                                <Label htmlFor="start-date" className="text-sm font-medium text-gray-700">
                                     Data Început
                                 </Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant={"outline"}
-                                            className={`col-span-3 border-[#0A2747] text-left font-normal ${
-                                
-                                                !newReport.startDate && "text-muted-foreground"
-                                            }`}
+                                            className={`rounded-lg border-gray-300 text-left font-normal ${!newReport.startDate && "text-gray-400"
+                                                }`}
                                         >
                                             {newReport.startDate ? (
                                                 format(newReport.startDate, "PPP", { locale: ro })
@@ -282,17 +255,16 @@ export default function ReportViewingExport() {
                                     </PopoverContent>
                                 </Popover>
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="end-date" className="text-right text-[#0A2747]">
+                            <div className="grid gap-2">
+                                <Label htmlFor="end-date" className="text-sm font-medium text-gray-700">
                                     Data Sfârșit
                                 </Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant={"outline"}
-                                            className={`col-span-3 border-[#0A2747] text-left font-normal ${
-                                                !newReport.endDate && "text-muted-foreground"
-                                            }`}
+                                            className={`rounded-lg border-gray-300 text-left font-normal ${!newReport.endDate && "text-gray-400"
+                                                }`}
                                         >
                                             {newReport.endDate ? (
                                                 format(newReport.endDate, "PPP", { locale: ro })
@@ -315,27 +287,27 @@ export default function ReportViewingExport() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button onClick={handleGenerateReport} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">Generează Raport</Button>
+                            <Button onClick={handleGenerateReport} className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 rounded-full px-6 py-2 text-sm font-medium">Generează Raport</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
 
                 <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
-                    <DialogContent className="bg-white">
+                    <DialogContent className="bg-white rounded-2xl p-6 max-w-md">
                         <DialogHeader>
-                            <DialogTitle className="text-[#0A2747]">Programează Generare Automată Rapoarte</DialogTitle>
-                            <DialogDescription className="text-gray-500">Setați programul pentru generarea automată a rapoartelor</DialogDescription>
+                            <DialogTitle className="text-2xl font-semibold text-gray-900">Programează Generare Automată Rapoarte</DialogTitle>
+                            <DialogDescription className="text-gray-500 mt-2">Setați programul pentru generarea automată a rapoartelor</DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="schedule-type" className="text-right text-[#0A2747]">
+                        <div className="grid gap-6 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="schedule-type" className="text-sm font-medium text-gray-700">
                                     Tip Raport
                                 </Label>
                                 <Select
                                     value={scheduleConfig.type}
                                     onValueChange={(value) => setScheduleConfig({ ...scheduleConfig, type: value })}
                                 >
-                                    <SelectTrigger className="col-span-3 border-[#0A2747]">
+                                    <SelectTrigger className="rounded-lg border-gray-300">
                                         <SelectValue placeholder="Selectează tipul de raport" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -344,15 +316,15 @@ export default function ReportViewingExport() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="schedule-day" className="text-right text-[#0A2747]">
+                            <div className="grid gap-2">
+                                <Label htmlFor="schedule-day" className="text-sm font-medium text-gray-700">
                                     {scheduleConfig.type === "Săptămânal" ? "Zi a Săptămânii" : "Zi a Lunii"}
                                 </Label>
                                 <Select
                                     value={scheduleConfig.day}
                                     onValueChange={(value) => setScheduleConfig({ ...scheduleConfig, day: value })}
                                 >
-                                    <SelectTrigger className="col-span-3 border-[#0A2747]">
+                                    <SelectTrigger className="rounded-lg border-gray-300">
                                         <SelectValue placeholder="Selectează ziua" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -367,8 +339,8 @@ export default function ReportViewingExport() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="schedule-time" className="text-right text-[#0A2747]">
+                            <div className="grid gap-2">
+                                <Label htmlFor="schedule-time" className="text-sm font-medium text-gray-700">
                                     Ora
                                 </Label>
                                 <Input
@@ -376,12 +348,12 @@ export default function ReportViewingExport() {
                                     type="time"
                                     value={scheduleConfig.time}
                                     onChange={(e) => setScheduleConfig({ ...scheduleConfig, time: e.target.value })}
-                                    className="col-span-3 border-[#0A2747]"
+                                    className="rounded-lg border-gray-300"
                                 />
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button onClick={handleScheduleReport} className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">Programează Raport</Button>
+                            <Button onClick={handleScheduleReport} className="bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 rounded-full px-6 py-2 text-sm font-medium">Programează Raport</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

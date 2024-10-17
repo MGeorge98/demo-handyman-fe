@@ -1,487 +1,468 @@
 "use client"
 
-import React, { useState } from 'react'
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, addMonths, startOfMonth, endOfMonth, isSameMonth, isSameDay, parseISO, isWithinInterval, addDays, subDays } from 'date-fns'
-import { ro } from 'date-fns/locale'
-import { ChevronLeft, ChevronRight, Plus, Clock, Edit2, Trash2 } from 'lucide-react'
+import { useState, useCallback, useMemo } from 'react'
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar'
+import moment from 'moment'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { CalendarIcon, Filter, Plus, Edit, Trash } from "lucide-react"
 import { DashboardLayout } from '@/components/layout'
 import { managerLinks } from '../page'
+// import { DatePicker } from "@/components/ui/date-picker"
 
-type Team = {
-    id: string;
-    name: string;
-    skills: string[];
-    color: string;
-}
+const localizer = momentLocalizer(moment)
 
-type Activity = {
-    id: string;
-    projectId: string;
-    teamId: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-}
-
-type Project = {
-    id: string;
-    name: string;
-    teamId: string;
-    start: string;
-    end: string;
-}
-
-const teams: Team[] = [
-    { id: '1', name: 'Echipa Rezidențială', skills: ['Curățenie generală', 'Curățare covoare'], color: '#FAA502' },
-    { id: '2', name: 'Echipa Comercială', skills: ['Curățenie birouri', 'Curățare geamuri'], color: '#4CAF50' },
-    { id: '3', name: 'Echipa Industrială', skills: ['Curățenie fabrici', 'Decontaminare'], color: '#2196F3' },
+const services = [
+    'Întreținere Spații Verzi',
+    'Merchandising',
+    'Alpinism Utilitar',
+    'Dezinfecție',
+    'Deratizare',
+    'Dezinsecție',
+    'Curățenie Interioară',
+    'Curățenie Exterioară',
+    'Operațiuni Sezon Rece'
 ]
 
-const initialProjects: Project[] = [
-    { id: '1', name: 'Curățenie Sediu Central BankCorp', teamId: '2', start: '2024-03-01', end: '2024-03-15' },
-    { id: '2', name: 'Mentenanță Mall Shopville', teamId: '2', start: '2024-03-05', end: '2024-03-20' },
-    { id: '3', name: 'Curățenie Post-Construcție Green Park', teamId: '1', start: '2024-03-10', end: '2024-03-25' },
+const employees = [
+    { id: 1, name: "Ana Popescu", role: "Specialist Curățenie", skills: ["Curățenie Interioară", "Curățenie Exterioară"], availability: "Disponibil", color: "#34C759" },
+    { id: 2, name: "Mihai Ionescu", role: "Tehnician DDD", skills: ["Dezinfecție", "Deratizare", "Dezinsecție"], availability: "Parțial disponibil", color: "#FF9500" },
+    { id: 3, name: "Elena Dumitrescu", role: "Specialist Spații Verzi", skills: ["Întreținere Spații Verzi"], availability: "Disponibil", color: "#007AFF" },
+    { id: 4, name: "Alexandru Popa", role: "Alpinist Utilitar", skills: ["Alpinism Utilitar"], availability: "Indisponibil", color: "#FF3B30" },
+    { id: 5, name: "Maria Stancu", role: "Merchandiser", skills: ["Merchandising"], availability: "Disponibil", color: "#5856D6" }
 ]
 
-const initialActivities: Activity[] = [
-    { id: '1', projectId: '1', teamId: '2', date: '2024-03-01', startTime: '09:00', endTime: '17:00' },
-    { id: '2', projectId: '1', teamId: '2', date: '2024-03-02', startTime: '09:00', endTime: '17:00' },
-    { id: '3', projectId: '2', teamId: '2', date: '2024-03-05', startTime: '08:00', endTime: '16:00' },
-    { id: '4', projectId: '2', teamId: '2', date: '2024-03-06', startTime: '08:00', endTime: '16:00' },
-    { id: '5', projectId: '3', teamId: '1', date: '2024-03-10', startTime: '10:00', endTime: '18:00' },
-    { id: '6', projectId: '3', teamId: '1', date: '2024-03-11', startTime: '10:00', endTime: '18:00' },
-]
+const generateMockData = () => {
+    const mockData = []
+    const startDate = new Date()
+    for (let i = 0; i < 30; i++) {
+        const date = new Date(startDate)
+        date.setDate(startDate.getDate() + i)
 
-export default function CalendarInteractivEchipeImbunatatit() {
+        const numEvents = Math.floor(Math.random() * 4) + 2
+        for (let j = 0; j < numEvents; j++) {
+            const startHour = Math.floor(Math.random() * 8) + 8 // 8 AM to 4 PM
+            const employee = employees[Math.floor(Math.random() * employees.length)]
+            const service = employee.skills[Math.floor(Math.random() * employee.skills.length)]
+            mockData.push({
+                id: mockData.length + 1,
+                title: `${service} - ${employee.name}`,
+                start: new Date(date.setHours(startHour, 0, 0, 0)),
+                end: new Date(date.setHours(startHour + 2, 0, 0, 0)),
+                service: service,
+                employee: employee
+            })
+        }
+    }
+    return mockData
+}
+
+const initialEvents = generateMockData()
+
+export default function HandymanCalendar() {
+    const [events, setEvents] = useState(initialEvents)
+    const [selectedEvent, setSelectedEvent] = useState(null)
+    const [filters, setFilters] = useState({ service: 'all', employee: 'all', project: 'all', date: null })
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+    const [selectedSlot, setSelectedSlot] = useState(null)
     const [currentDate, setCurrentDate] = useState(new Date())
-    const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
-    const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
-    const [projects, setProjects] = useState<Project[]>(initialProjects)
-    const [activities, setActivities] = useState<Activity[]>(initialActivities)
-    const [view, setView] = useState<'day' | 'week' | 'month'>('week')
-    const [notifications, setNotifications] = useState<boolean>(true)
+    const [currentView, setCurrentView] = useState(Views.MONTH)
 
-    const handlePrevious = () => {
-        if (view === 'day') setCurrentDate(prev => subDays(prev, 1))
-        if (view === 'week') setCurrentDate(prev => addWeeks(prev, -1))
-        if (view === 'month') setCurrentDate(prev => addMonths(prev, -1))
+    const filteredEvents = useMemo(() => {
+        return events.filter(event =>
+            (filters.service === 'all' || event.service === filters.service) &&
+            (filters.employee === 'all' || event.employee.id === parseInt(filters.employee)) &&
+            (filters.project === 'all' || event.project === filters.project) &&
+            (!filters.date || moment(event.start).isSame(filters.date, 'day'))
+        )
+    }, [events, filters])
+
+    const handleSelectEvent = useCallback((event) => {
+        setSelectedEvent(event)
+        setIsEditMode(false)
+    }, [])
+
+    const handleSelectSlot = useCallback((slotInfo) => {
+        setSelectedSlot(slotInfo)
+        setIsAddModalOpen(true)
+    }, [])
+
+    const handleAddEvent = (newEvent) => {
+        setEvents([...events, { ...newEvent, id: events.length + 1 }])
+        setIsAddModalOpen(false)
     }
 
-    const handleNext = () => {
-        if (view === 'day') setCurrentDate(prev => addDays(prev, 1))
-        if (view === 'week') setCurrentDate(prev => addWeeks(prev, 1))
-        if (view === 'month') setCurrentDate(prev => addMonths(prev, 1))
+    const handleUpdateEvent = (updatedEvent) => {
+        setEvents(events.map(event => event.id === updatedEvent.id ? updatedEvent : event))
+        setSelectedEvent(null)
+        setIsEditMode(false)
     }
 
-    const filteredProjects = projects.filter(project =>
-        (!selectedTeam || project.teamId === selectedTeam) &&
-        (!selectedSkill || teams.find(t => t.id === project.teamId)?.skills.includes(selectedSkill))
-    )
-
-    const getDaysToRender = () => {
-        if (view === 'day') return [currentDate]
-        if (view === 'week') return eachDayOfInterval({ start: startOfWeek(currentDate, { weekStartsOn: 1 }), end: endOfWeek(currentDate, { weekStartsOn: 1 }) })
-        return eachDayOfInterval({ start: startOfMonth(currentDate), end: endOfMonth(currentDate) })
+    const handleDeleteEvent = (eventId) => {
+        setEvents(events.filter(event => event.id !== eventId))
+        setSelectedEvent(null)
     }
 
-    const updateActivity = (updatedActivity: Activity) => {
-        setActivities(activities.map(a => a.id === updatedActivity.id ? updatedActivity : a))
+    const eventStyleGetter = (event) => {
+        const style = {
+            backgroundColor: event.employee.color,
+            borderRadius: '8px',
+            opacity: 0.8,
+            color: 'white',
+            border: 'none',
+            display: 'block'
+        }
+        return {
+            style: style
+        }
     }
 
-    const addActivity = (newActivity: Omit<Activity, 'id'>) => {
-        const activityWithId = { ...newActivity, id: (activities.length + 1).toString() }
-        setActivities([...activities, activityWithId])
+    const onNavigate = (newDate) => {
+        setCurrentDate(newDate)
     }
 
-    const deleteActivity = (activityId: string) => {
-        setActivities(activities.filter(a => a.id !== activityId))
+    const onView = (newView) => {
+        setCurrentView(newView)
     }
 
     return (
-        <DashboardLayout links={managerLinks}>
-            <div className="min-h-screen bg-[#F4F7FA] p-4 sm:p-6 md:p-8">
-                <h1 className="text-3xl font-bold mb-6 text-[#0A2747]">Calendar și Activitate Echipe</h1>
+        <DashboardLayout links={managerLinks} title='Calendar'>
+            <div className="flex min-h-screen w-full flex-col bg-gray-50">
+                <main className="flex-1 p-6">
+                    <Card className="mb-6 border-none shadow-md rounded-2xl overflow-hidden">
+                    <CardHeader className="bg-white border-b border-gray-200 px-6 py-4">
+                    <CardTitle className="text-xl font-semibold text-gray-900">Calendar Programări</CardTitle>
+                            <CardDescription className="text-sm text-gray-500">Gestionează și vizualizează detaliile programărilor</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <div className='w-full flex flex-wrap gap-4 mb-6'>
+                            <Select onValueChange={(value) => setFilters({ ...filters, project: value })}>
+                                    <SelectTrigger className="w-[200px] rounded-full">
+                                        <SelectValue placeholder="Filtru Proiect" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Toate Proiectele</SelectItem>
+                                        {/* Add project options here */}
+                                    </SelectContent>
+                                </Select>
+                                <Select onValueChange={(value) => setFilters({ ...filters, service: value })}>
+                                    <SelectTrigger className="w-[200px] rounded-full">
+                                        <SelectValue placeholder="Filtru Echipa" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Toate Echipele</SelectItem>
+                                        {services.map(service => (
+                                            <SelectItem key={service} value={service}>{service}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
 
-                <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-                    <div className="flex items-center space-x-2">
-                        <Button onClick={handlePrevious}><ChevronLeft /></Button>
-                        <span className="text-lg font-semibold">{format(currentDate, 'MMMM yyyy', { locale: ro })}</span>
-                        <Button onClick={handleNext}><ChevronRight /></Button>
-                        {view === 'day' && (
-                            <>
-                                <Button onClick={() => setCurrentDate(prev => subDays(prev, 1))} variant="outline" size="sm">
-                                    <ChevronLeft className="h-4 w-4 mr-1" />
-                                    Ziua anterioară
-                                </Button>
-                                <Button onClick={() => setCurrentDate(prev => addDays(prev, 1))} variant="outline" size="sm">
-                                    Ziua următoare
-                                    <ChevronRight className="h-4 w-4 ml-1" />
-                                </Button>
-                            </>
-                        )}
-                    </div>
-                    <Tabs value={view} onValueChange={(v) => setView(v as 'day' | 'week' | 'month')}>
-                        <TabsList>
-                            <TabsTrigger value="day">Zi</TabsTrigger>
-                            <TabsTrigger value="week">Săptămână</TabsTrigger>
-                            <TabsTrigger value="month">Lună</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
-                    <Select onValueChange={(value) => setSelectedTeam(value === 'all' ? null : value)}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Filtrează după echipă" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Toate echipele</SelectItem>
-                            {teams.map(team => (
-                                <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Select onValueChange={(value) => setSelectedSkill(value === 'all' ? null : value)}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Filtrează după competență" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Toate competențele</SelectItem>
-                            {Array.from(new Set(teams.flatMap(t => t.skills))).map(skill => (
-                                <SelectItem key={skill} value={skill}>{skill}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            id="notifications"
-                            checked={notifications}
-                            onCheckedChange={setNotifications}
-                        />
-                        <Label htmlFor="notifications">Notificări</Label>
-                    </div>
-                </div>
+                                <Select onValueChange={(value) => setFilters({ ...filters, employee: value })}>
+                                    <SelectTrigger className="w-[200px] rounded-full">
+                                        <SelectValue placeholder="Filtru Angajat" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Toți Angajații</SelectItem>
+                                        {employees.map(employee => (
+                                            <SelectItem key={employee.id} value={employee.id.toString()}>{employee.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
 
-                <Card className="overflow-hidden border-none shadow-md">
-                    <CardContent className="p-0">
-                        <CalendarGrid
-                            days={getDaysToRender()}
-                            view={view}
-                            projects={filteredProjects}
-                            activities={activities}
-                            teams={teams}
-                            onUpdateActivity={updateActivity}
-                            onAddActivity={addActivity}
-                            onDeleteActivity={deleteActivity}
-                        />
-                    </CardContent>
-                </Card>
+                          
+
+                                {/* <DatePicker
+                                    selected={filters.date}
+                                    onSelect={(date) => setFilters({ ...filters, date })}
+                                    placeholderText="Selectează data"
+                                    className="w-[200px] rounded-full"
+                                /> */}
+                                <Input
+                                    id="start"
+                                    name="start"
+                                    type="date"
+                                    // value={moment(formData.start).format('YYYY-MM-DDTHH:mm')}
+                                    // onChange={(e) => setFormData({ ...formData, start: new Date(e.target.value) })}
+                                    required
+                                    className="rounded-full w-[140px]"
+                                />
+                                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button className="bg-blue-500 text-white hover:bg-blue-600 rounded-full">
+                                            <Plus className="mr-2 h-4 w-4" /> Adaugă Programare
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="rounded-2xl">
+                                        <DialogHeader>
+                                            <DialogTitle>Adaugă Programare Nouă</DialogTitle>
+                                        </DialogHeader>
+                                        <EventForm onSubmit={handleAddEvent} initialDate={selectedSlot?.start} />
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+
+                            <div className='w-full' style={{ height: '600px' }}>
+                                <Calendar
+                                    localizer={localizer}
+                                    events={filteredEvents}
+                                    startAccessor="start"
+                                    endAccessor="end"
+                                    onSelectEvent={handleSelectEvent}
+                                    onSelectSlot={handleSelectSlot}
+                                    selectable
+                                    views={['month', 'week', 'day']}
+                                    defaultView={Views.MONTH}
+                                    view={currentView}
+                                    onView={onView}
+                                    date={currentDate}
+                                    onNavigate={onNavigate}
+                                    eventPropGetter={eventStyleGetter}
+                                    components={{
+                                        toolbar: CustomToolbar,
+                                    }}
+                                    popup
+                                    messages={{
+                                        showMore: (total) => `+ Vezi alte ${total} programări`,
+                                    }}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {selectedEvent && (
+                        <Dialog open={!!selectedEvent} onOpenChange={() => { setSelectedEvent(null); setIsEditMode(false); }}>
+                            <DialogContent className="rounded-2xl">
+                                <DialogHeader>
+                                    <DialogTitle>{isEditMode ? "Editează Programare" : "Detalii Programare"}</DialogTitle>
+                                </DialogHeader>
+                                {isEditMode ? (
+                                    <EventForm event={selectedEvent} onSubmit={handleUpdateEvent} />
+                                ) : (
+                                    <EventDetails event={selectedEvent} />
+                                )}
+                                <DialogFooter>
+                                    {!isEditMode && (
+                                        <>
+                                            <Button onClick={() => setIsEditMode(true)} className="bg-blue-500 text-white hover:bg-blue-600 rounded-full">
+                                                <Edit className="mr-2 h-4 w-4" /> Editează
+                                            </Button>
+                                            <Button onClick={() => handleDeleteEvent(selectedEvent.id)} variant="destructive" className="rounded-full">
+                                                <Trash className="mr-2 h-4 w-4" /> Șterge
+                                            </Button>
+                                        </>
+                                    )}
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    )}
+                </main>
             </div>
         </DashboardLayout>
     )
 }
 
-function CalendarGrid({
-    days,
-    view,
-    projects,
-    activities,
-    teams,
-    onUpdateActivity,
-    onAddActivity,
-    onDeleteActivity
-}: {
-    days: Date[];
-    view: 'day' | 'week' | 'month';
-    projects: Project[];
-    activities: Activity[];
-    teams: Team[];
-    onUpdateActivity: (activity: Activity) => void;
-    onAddActivity: (activity: Omit<Activity, 'id'>) => void;
-    onDeleteActivity: (activityId: string) => void;
-}) {
-    const gridCols = view === 'month' ? 'grid-cols-7' : view === 'week' ? 'grid-cols-7' : 'grid-cols-1'
-
-    return (
-        <div className={`grid ${gridCols} gap-px bg-gray-200`}>
-            {days.map(day => (
-                <CalendarDay
-                    key={day.toString()}
-                    day={day}
-                    view={view}
-                    projects={projects}
-                    activities={activities}
-                    teams={teams}
-                    onUpdateActivity={onUpdateActivity}
-                    onAddActivity={onAddActivity}
-                    onDeleteActivity={onDeleteActivity}
-                />
-            ))}
-        </div>
-    )
-}
-
-function CalendarDay({
-    day,
-    view,
-    projects,
-    activities,
-    teams,
-    onUpdateActivity,
-    onAddActivity,
-    onDeleteActivity
-}: {
-    day: Date;
-    view: 'day' | 'week' | 'month';
-    projects: Project[];
-    activities: Activity[];
-    teams: Team[];
-    onUpdateActivity: (activity: Activity) => void;
-    onAddActivity: (activity: Omit<Activity, 'id'>) => void;
-    onDeleteActivity: (activityId: string) => void;
-}) {
-    const dayActivities = activities.filter(activity => activity.date === format(day, 'yyyy-MM-dd'))
-    const isToday = isSameDay(day, new Date())
-    const isCurrentMonth = isSameMonth(day, new Date())
-
-    return (
-        <div className={`bg-white p-2 ${view === 'month' ? 'h-48' : 'h-[600px]'} overflow-y-auto`}>
-            <div className="flex justify-between items-center mb-2">
-                <div className={`font-semibold ${isToday ? 'text-blue-600' : ''} ${!isCurrentMonth ? 'text-gray-400' : ''}`}>
-                    {format(day, view === 'month' ? 'd' : 'EEE d', { locale: ro })}
-                    {view === 'month' && (
-                        <div className="text-xs text-gray-500">{format(day, 'EEEE', { locale: ro })}</div>
-                    )}
-                </div>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                            <Edit2 className="h-4 w-4" />
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl">
-                        <DialogHeader>
-                            <DialogTitle>Editează Activitățile pentru {format(day, 'd MMMM yyyy', { locale: ro })}</DialogTitle>
-                        </DialogHeader>
-                        <DayEditForm
-                            day={day}
-                            activities={dayActivities}
-                            projects={projects}
-                            teams={teams}
-                            onUpdateActivity={onUpdateActivity}
-                            onAddActivity={onAddActivity}
-                            onDeleteActivity={onDeleteActivity}
-                        />
-                    </DialogContent>
-                </Dialog>
-            </div>
-            <div className="space-y-1">
-                {teams.map(team => (
-                    <TeamDaySchedule
-                        key={team.id}
-                        team={team}
-                        activities={dayActivities.filter(a => a.teamId === team.id)}
-                        projects={projects}
-                    />
-                ))}
-            </div>
-        </div>
-    )
-}
-
-function TeamDaySchedule({ team, activities, projects }: { team: Team, activities: Activity[], projects:  Project[] }) {
-    return (
-        <div className="text-xs">
-            <div className="font-semibold" style={{ color: team.color }}>{team.name}</div>
-            {activities.length > 0 ? (
-                activities.map(activity => {
-                    const project = projects.find(p => p.id === activity.projectId)
-                    return (
-                        <div key={activity.id} className="flex items-center mt-1">
-                            <Clock className="w-3 h-3 mr-1" />
-                            <span>{activity.startTime} - {activity.endTime}</span>
-                            <span className="ml-1 truncate">{project?.name}</span>
-                        </div>
-                    )
-                })
-            ) : (
-                <div className="text-gray-500 mt-1">Nicio activitate programată</div>
-            )}
-        </div>
-    )
-}
-
-function DayEditForm({
-    day,
-    activities,
-    projects,
-    teams,
-    onUpdateActivity,
-    onAddActivity,
-    onDeleteActivity
-}: {
-    day: Date,
-    activities: Activity[],
-    projects: Project[],
-    teams: Team[],
-    onUpdateActivity: (activity: Activity) => void,
-    onAddActivity: (activity: Omit<Activity, 'id'>) => void,
-    onDeleteActivity: (activityId: string) => void
-}) {
-    const [newActivity, setNewActivity] = useState<Omit<Activity, 'id'>>({
-        projectId: '',
-        teamId: '',
-        date: format(day, 'yyyy-MM-dd'),
-        startTime: '',
-        endTime: ''
+function EventForm({ onSubmit, event, initialDate }) {
+    const [formData, setFormData] = useState(event || {
+        title: '',
+        start: initialDate || new Date(),
+        end: initialDate ? new Date(initialDate.getTime() + 2 * 60 * 60 * 1000) : new Date(new Date().setHours(new Date().getHours() + 2)),
+        service: '',
+        employee: null,
+        project: ''
     })
 
-    const handleAddActivity = (e: React.FormEvent) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-        onAddActivity(newActivity)
-        setNewActivity({
-            projectId: '',
-            teamId: '',
-            date: format(day, 'yyyy-MM-dd'),
-            startTime: '',
-            endTime: ''
-        })
+        onSubmit(formData)
     }
 
     return (
-        <div className="space-y-6">
-            <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Activități existente</h3>
-                {activities.length > 0 ? (
-                    activities.map(activity => (
-                        <ActivityEditItem
-                            key={activity.id}
-                            activity={activity}
-                            projects={projects}
-                            teams={teams}
-                            onUpdateActivity={onUpdateActivity}
-                            onDeleteActivity={onDeleteActivity}
-                        />
-                    ))
-                ) : (
-                    <p>Nu există activități programate pentru această zi.</p>
-                )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <Label htmlFor="service">Serviciu</Label>
+                <Select name="service" value={formData.service} onValueChange={(value) => setFormData({ ...formData, service: value })}>
+                    <SelectTrigger className="rounded-full">
+                        <SelectValue placeholder="Selectează Serviciul" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {services.map(service => (
+                            <SelectItem key={service} value={service}>{service}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
-            <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Adaugă activitate nouă</h3>
-                <form onSubmit={handleAddActivity} className="space-y-4">
-                    <Select onValueChange={(value) => setNewActivity({ ...newActivity, teamId: value })}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selectează echipa" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {teams.map(team => (
-                                <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Select onValueChange={(value) => setNewActivity({ ...newActivity, projectId: value })}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selectează proiectul" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {projects.map(project => (
-                                <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <div className="flex space-x-2">
-                        <div className="flex-1">
-                            <Label htmlFor="startTime">Ora început</Label>
-                            <Input
-                                id="startTime"
-                                type="time"
-                                value={newActivity.startTime}
-                                onChange={(e) => setNewActivity({ ...newActivity, startTime: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <Label htmlFor="endTime">Ora sfârșit</Label>
-                            <Input
-                                id="endTime"
-                                type="time"
-                                value={newActivity.endTime}
-                                onChange={(e) => setNewActivity({ ...newActivity, endTime: e.target.value })}
-                                required
-                            />
-                        </div>
-                    </div>
-                    <Button type="submit" className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">Adaugă Activitate</Button>
-                </form>
+            <div>
+                <Label htmlFor="employee">Angajat</Label>
+                <Select name="employee" value={formData.employee?.id.toString()} onValueChange={(value) => setFormData({ ...formData, employee: employees.find(emp => emp.id === parseInt(value)) })}>
+                    <SelectTrigger className="rounded-full">
+                        <SelectValue placeholder="Selectează Angajatul" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {employees.map(employee => (
+                            <SelectItem key={employee.id} value={employee.id.toString()}>{employee.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div>
+                <Label htmlFor="project">Proiect</Label>
+                <Input
+                    id="project"
+                    name="project"
+                    value={formData.project}
+                    onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+                    className="rounded-full"
+                    placeholder="Introduceți numele proiectului"
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="start">Data și Ora Început</Label>
+                <Input
+                    id="start"
+                    name="start"
+                    type="datetime-local"
+                    value={moment(formData.start).format('YYYY-MM-DDTHH:mm')}
+                    onChange={(e) => setFormData({ ...formData, start: new Date(e.target.value) })}
+                    required
+                    className="rounded-full"
+                />
+            </div>
+            <div>
+                <Label htmlFor="end">Data și Ora Sfârșit</Label>
+                <Input
+                    id="end"
+                    name="end"
+                    type="datetime-local"
+                    value={moment(formData.end).format('YYYY-MM-DDTHH:mm')}
+                    onChange={(e) => setFormData({ ...formData, end: new Date(e.target.value) })}
+                    required
+                    className="rounded-full"
+                />
+            </div>
+            <Button type="submit" className="bg-blue-500 text-white hover:bg-blue-600 rounded-full w-full">
+                {event ? 'Actualizează Programare' : 'Adaugă Programare'}
+            </Button>
+        </form>
+    )
+}
+
+function EventDetails({ event }) {
+    return (
+        <div className="space-y-4">
+            <div>
+                <Label className="font-bold">Serviciu</Label>
+                <p>{event.service}</p>
+            </div>
+            <div>
+                <Label className="font-bold">Angajat</Label>
+                <p>{event.employee.name}</p>
+            </div>
+            <div>
+                <Label className="font-bold">Rol</Label>
+                <p>{event.employee.role}</p>
+            </div>
+            <div>
+                <Label className="font-bold">Proiect</Label>
+                <p>{event.project || 'N/A'}</p>
+            </div>
+            <div>
+                <Label className="font-bold">Data și Ora Început</Label>
+                <p>{moment(event.start).format('DD/MM/YYYY HH:mm')}</p>
+            </div>
+            <div>
+                <Label className="font-bold">Data și Ora Sfârșit</Label>
+                <p>{moment(event.end).format('DD/MM/YYYY HH:mm')}</p>
+            </div>
+            <div>
+                <Label className="font-bold">Disponibilitate</Label>
+                <Badge
+                    variant={
+                        event.employee.availability === "Disponibil"
+                            ? "success"
+                            : event.employee.availability === "Parțial disponibil"
+                                ? "warning"
+                                : "destructive"
+                    }
+                    className="rounded-full"
+                >
+                    {event.employee.availability}
+                </Badge>
             </div>
         </div>
     )
 }
 
-function ActivityEditItem({
-    activity,
-    projects,
-    teams,
-    onUpdateActivity,
-    onDeleteActivity
-}: {
-    activity: Activity,
-    projects: Project[],
-    teams: Team[],
-    onUpdateActivity: (activity: Activity) => void,
-    onDeleteActivity: (activityId: string) => void
-}) {
-    const [editedActivity, setEditedActivity] = useState(activity)
+function CustomToolbar({ date, onNavigate, onView, view }) {
+    const goToBack = () => {
+        onNavigate('PREV')
+    }
 
-    const handleUpdate = () => {
-        onUpdateActivity(editedActivity)
+    const goToNext = () => {
+        onNavigate('NEXT')
+    }
+
+    const goToCurrent = () => {
+        onNavigate('TODAY')
+    }
+
+    const label = () => {
+        const dateObj = moment(date)
+        return (
+            <span className="text-lg font-semibold">{dateObj.format('MMMM YYYY')}</span>
+        )
     }
 
     return (
-        <div className="flex items-center space-x-2">
-            <Select value={editedActivity.teamId} onValueChange={(value) => setEditedActivity({ ...editedActivity, teamId: value })}>
-                <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Echipa" />
-                </SelectTrigger>
-                <SelectContent>
-                    {teams.map(team => (
-                        <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <Select value={editedActivity.projectId} onValueChange={(value) => setEditedActivity({ ...editedActivity, projectId: value })}>
-                <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Proiect" />
-                </SelectTrigger>
-                <SelectContent>
-                    {projects.map(project => (
-                        <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <Input
-                type="time"
-                value={editedActivity.startTime}
-                onChange={(e) => setEditedActivity({ ...editedActivity, startTime: e.target.value })}
-                className="w-24"
-            />
-            <Input
-                type="time"
-                value={editedActivity.endTime}
-                onChange={(e) => setEditedActivity({ ...editedActivity, endTime: e.target.value })}
-                className="w-24"
-            />
-            <Button onClick={handleUpdate} size="sm" className="bg-[#FAA502] text-white hover:bg-[#FAA502]/90">Actualizează</Button>
-            <Button onClick={() => onDeleteActivity(activity.id)} variant="destructive" size="sm">
-                <Trash2 className="h-4 w-4" />
-            </Button>
+        <div className="flex justify-between items-center mb-4">
+            <div>
+                <Button onClick={goToBack} variant="outline" className="mr-2 rounded-full">
+                    <CalendarIcon className="mr-2 h-4 w-4" /> Anterioră
+                </Button>
+                <Button onClick={goToNext} variant="outline" className="mr-2 rounded-full">
+                    <CalendarIcon className="mr-2 h-4 w-4" /> Următore
+                </Button>
+                <Button onClick={goToCurrent} variant="outline" className="rounded-full">
+                    <CalendarIcon className="mr-2 h-4 w-4" /> Astăzi
+                </Button>
+            </div>
+            <div>{label()}</div>
+            <div>
+
+                <Select
+                    value={view}
+                    onValueChange={onView}
+                >
+                    <SelectTrigger className="w-[120px] rounded-full">
+                        <SelectValue placeholder="Selectează vizualizarea" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="month">Lună</SelectItem>
+                        <SelectItem value="week">Săptămână</SelectItem>
+                        <SelectItem value="day">Zi</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
     )
 }
